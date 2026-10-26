@@ -1,0 +1,16 @@
+[project]
+name = "ecoai-kazakhstan"
+version = "0.1.0"
+description = "Учебное Streamlit-приложение для экологического мониторинга Казахстана"
+authors = []
+requires-python = ">=3.13"
+dependencies = [
+    "ddgs>=9.16.1",
+    "streamlit>=1.66.1",
+    "plotly",
+    "pandas",
+    "requests",
+]
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
