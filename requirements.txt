@@ -1,4 +1,6 @@
-streamlit>=1.66,<2.0
-ddgs>=9.16,<10.0
-pandas 
-plotly
+ streamlit>=1.36,<2
+pandas>=2.0
+plotly>=5.18
+requests>=2.31
+folium>=0.15
+streamlit-folium>=0.20
