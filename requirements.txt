@@ -1,6 +1,5 @@
- streamlit>=1.36,<2
+ streamlit>=1.36,<2.0
+requests>=2.31
+urllib3>=2.0
 pandas>=2.0
 plotly>=5.18
-requests>=2.31
-folium>=0.15
-streamlit-folium>=0.20
