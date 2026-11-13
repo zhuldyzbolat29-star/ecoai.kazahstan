@@ -1,5 +1,4 @@
 import os
-import json
 import math
 import re
 from datetime import datetime
@@ -9,7 +8,6 @@ import pandas as pd
 import plotly.express as px
 import requests
 import streamlit as st
-import streamlit.components.v1 as components
 from folium.plugins import Fullscreen
 from streamlit_folium import st_folium
 
@@ -19,7 +17,6 @@ from streamlit_folium import st_folium
 
 st.set_page_config(
     page_title="ECO AI Kazakhstan",
-    page_icon="🌿",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -74,8 +71,7 @@ LANGS = {
 }
 TEXT = {
     "ru": {
-        "language": "Язык", "mode": "Режим работы", "normal": "Обычный режим",
-        "voice": "Голосовой режим", "login_title": "Добро пожаловать в ECO AI",
+        "language": "Язык", "login_title": "Добро пожаловать в ECO AI",
         "login_sub": "Экологическая информационная платформа Казахстана",
         "login": "Логин (демо)", "password": "Пароль (демо)",
         "continue": "Продолжить", "city": "Город Казахстана",
@@ -83,17 +79,13 @@ TEXT = {
         "search": "Найти предприятие", "map": "Интерактивная карта",
         "air": "Загрязнение воздуха", "wind": "Ветер",
         "company": "Карточка предприятия", "risk": "Экологические риски",
-        "analysis": "Анализ данных", "voice_title": "Голосовой помощник ECO AI",
-        "voice_hint": "Нажмите «Старт» и разрешите доступ к микрофону.",
+        "analysis": "Анализ данных",
         "no_search": "Введите город и нажмите кнопку поиска.",
         "not_found": "Точное совпадение предприятия в открытых картографических данных не найдено.",
         "data_missing": "Данные недоступны для этой точки. Мы не подставляем вымышленные значения.",
         "model_notice": "Модельные данные Open-Meteo/CAMS, не прямое измерение у завода.",
         "official_notice": "Официальные измерения показываются только при наличии подтверждённого источника.",
-        "source": "Источники данных", "read_first": "Прочитай первый пункт",
-        "read_second": "Прочитай второй пункт", "read_third": "Прочитай третий пункт",
-        "read_all": "Прочитай всё", "start": "Старт", "stop": "Стоп",
-        "yes": "Да", "no": "Нет", "risk_low": "Низкий модельный индикатор",
+        "source": "Источники данных", "risk_low": "Низкий модельный индикатор",
         "risk_mid": "Умеренный модельный индикатор", "risk_high": "Повышенный модельный индикатор",
         "risk_unknown": "Недостаточно данных для оценки",
         "no_factory": "Предприятие не найдено среди объектов OpenStreetMap в выбранной окрестности.",
@@ -108,25 +100,20 @@ TEXT = {
         "open_map": "Открыть объект на карте", "search_error": "Не удалось получить данные:",
     },
     "kk": {
-        "language": "Тіл", "mode": "Жұмыс режимі", "normal": "Қалыпты режим",
-        "voice": "Дауыстық режим", "login_title": "ECO AI платформасына қош келдіңіз",
+        "language": "Тіл", "login_title": "ECO AI платформасына қош келдіңіз",
         "login_sub": "Қазақстанның экологиялық ақпараттық платформасы",
         "login": "Логин (демо)", "password": "Құпиясөз (демо)",
         "continue": "Жалғастыру", "city": "Қазақстан қаласы",
         "factory": "Кәсіпорын / зауыт атауы", "search": "Кәсіпорынды іздеу",
         "map": "Интерактивті карта", "air": "Ауа ластануы", "wind": "Жел",
         "company": "Кәсіпорын картасы", "risk": "Экологиялық тәуекелдер",
-        "analysis": "Деректерді талдау", "voice_title": "ECO AI дауыстық көмекшісі",
-        "voice_hint": "«Бастау» түймесін басып, микрофонға рұқсат беріңіз.",
+        "analysis": "Деректерді талдау",
         "no_search": "Қаланы енгізіп, іздеу түймесін басыңыз.",
         "not_found": "Ашық карта деректерінен кәсіпорынның дәл сәйкестігі табылмады.",
         "data_missing": "Бұл нүкте үшін деректер қолжетімсіз. Жалған мәндер қолданылмайды.",
         "model_notice": "Open-Meteo/CAMS модельдік деректері, зауыт жанындағы тікелей өлшем емес.",
         "official_notice": "Ресми өлшемдер тек расталған дереккөз болғанда көрсетіледі.",
-        "source": "Дереккөздер", "read_first": "Бірінші тармақты оқы",
-        "read_second": "Екінші тармақты оқы", "read_third": "Үшінші тармақты оқы",
-        "read_all": "Барлығын оқы", "start": "Бастау", "stop": "Тоқтату",
-        "yes": "Иә", "no": "Жоқ", "risk_low": "Модельдік көрсеткіш төмен",
+        "source": "Дереккөздер", "risk_low": "Модельдік көрсеткіш төмен",
         "risk_mid": "Модельдік көрсеткіш орташа", "risk_high": "Модельдік көрсеткіш жоғары",
         "risk_unknown": "Бағалау үшін дерек жеткіліксіз",
         "no_factory": "Таңдалған аумақта OpenStreetMap деректерінен кәсіпорын табылмады.",
@@ -141,22 +128,18 @@ TEXT = {
         "open_map": "Нысанды картадан ашу", "search_error": "Деректерді алу мүмкін болмады:",
     },
     "en": {
-        "language": "Language", "mode": "Operating mode", "normal": "Normal mode",
-        "voice": "Voice mode", "login_title": "Welcome to ECO AI",
+        "language": "Language", "login_title": "Welcome to ECO AI",
         "login_sub": "Environmental information platform for Kazakhstan",
         "login": "Login (demo)", "password": "Password (demo)",
         "continue": "Continue", "city": "Kazakhstan city", "factory": "Enterprise / factory name",
         "search": "Find enterprise", "map": "Interactive map", "air": "Air pollution",
         "wind": "Wind", "company": "Enterprise profile", "risk": "Environmental risks",
-        "analysis": "Data analysis", "voice_title": "ECO AI Voice Assistant",
-        "voice_hint": "Press Start and allow microphone access.", "no_search": "Enter a city and press Search.",
+        "analysis": "Data analysis", "no_search": "Enter a city and press Search.",
         "not_found": "No exact enterprise match was found in open map data.",
         "data_missing": "Data are unavailable for this point. No invented values are displayed.",
         "model_notice": "Open-Meteo/CAMS model data, not a direct measurement at the factory.",
         "official_notice": "Official measurements are shown only when a verified source is available.",
-        "source": "Data sources", "read_first": "Read the first point", "read_second": "Read the second point",
-        "read_third": "Read the third point", "read_all": "Read everything", "start": "Start",
-        "stop": "Stop", "yes": "Yes", "no": "No", "risk_low": "Low model indicator",
+        "source": "Data sources", "risk_low": "Low model indicator",
         "risk_mid": "Moderate model indicator", "risk_high": "Elevated model indicator",
         "risk_unknown": "Not enough data to assess", "no_factory": "No enterprise was found in OpenStreetMap within the selected area.",
         "osm_found": "OpenStreetMap industrial objects near the city",
@@ -207,10 +190,58 @@ def geocode_city(city):
     response = requests.get(url, params=params, headers=HEADERS, timeout=20)
     response.raise_for_status()
     results = response.json().get("results", [])
+    results = [r for r in results if r.get("country_code", "").lower() == "kz" or
+               r.get("country", "").lower() == "kazakhstan"]
     if not results:
-        raise ValueError("City was not found in Kazakhstan. Check the spelling.")
-    # Prefer Kazakhstan and exact city/town results.
-    return results[0]
+        # Fallback to Nominatim when Open-Meteo geocoding has no Kazakhstan match.
+        fallback = requests.get(
+            "https://nominatim.openstreetmap.org/search",
+            params={"q": f"{city}, Kazakhstan", "format": "jsonv2", "limit": 5, "countrycodes": "kz"},
+            headers=HEADERS, timeout=20,
+        )
+        fallback.raise_for_status()
+        places = fallback.json()
+        if not places:
+            raise ValueError("Город не найден в Казахстане. Проверьте написание.")
+        place = places[0]
+        return {
+            "name": place.get("name") or city,
+            "admin1": place.get("display_name", "Kazakhstan").split(",")[-2].strip(),
+            "country": "Kazakhstan", "country_code": "KZ",
+            "latitude": float(place["lat"]), "longitude": float(place["lon"]),
+        }
+    # Prefer a result whose name exactly matches the requested city.
+    return next((r for r in results if r.get("name", "").casefold() == city.casefold()), results[0])
+
+@st.cache_data(ttl=1800, show_spinner=False)
+def search_factory_nominatim(factory, city):
+    if not factory.strip():
+        return []
+    response = requests.get(
+        "https://nominatim.openstreetmap.org/search",
+        params={
+            "q": f"{factory}, {city}, Kazakhstan",
+            "format": "jsonv2", "addressdetails": 1, "limit": 10,
+            "countrycodes": "kz", "accept-language": "ru,en",
+        },
+        headers=HEADERS, timeout=25,
+    )
+    response.raise_for_status()
+    results = []
+    for item in response.json():
+        address = item.get("address", {})
+        if address.get("country_code", "kz").lower() != "kz":
+            continue
+        results.append({
+            "name": item.get("name") or item.get("display_name", factory),
+            "lat": float(item["lat"]), "lon": float(item["lon"]),
+            "type": f"{item.get('category', 'place')} / {item.get('type', 'unknown')}",
+            "operator": address.get("city") or address.get("town") or address.get("state") or "Not specified",
+            "website": "", "osm_type": item.get("osm_type", ""),
+            "osm_id": item.get("osm_id", ""),
+            "display_name": item.get("display_name", ""),
+        })
+    return results
 
 @st.cache_data(ttl=1800, show_spinner=False)
 def get_air_quality(lat, lon):
@@ -324,140 +355,21 @@ def risk_label(air):
         return t("risk_high"), "red", "European AQI"
     return t("risk_unknown"), "gray", "—"
 
-def voice_assistant(language, read_items):
-    locale = {"ru": "ru-RU", "kk": "kk-KZ", "en": "en-US"}[language]
-    items_json = json.dumps(read_items, ensure_ascii=False)
-    labels = {
-        "ru": {"start":"Старт", "stop":"Стоп", "yes":"Да", "no":"Нет",
-               "first":"Прочитай первый пункт", "second":"Прочитай второй пункт",
-               "third":"Прочитай третий пункт", "all":"Прочитай всё",
-               "ready":"Голосовой помощник готов. Скажите старт, стоп или номер пункта.",
-               "listening":"Слушаю.", "unsupported":"Распознавание речи не поддерживается этим браузером.",
-               "yesmsg":"Вы сказали да.", "nomsg":"Вы сказали нет.", "unknown":"Команда не распознана. Попробуйте ещё раз."},
-        "kk": {"start":"Бастау", "stop":"Тоқтату", "yes":"Иә", "no":"Жоқ",
-               "first":"Бірінші тармақты оқы", "second":"Екінші тармақты оқы",
-               "third":"Үшінші тармақты оқы", "all":"Барлығын оқы",
-               "ready":"Дауыстық көмекші дайын. Бастау, тоқтату немесе тармақ нөмірін айтыңыз.",
-               "listening":"Тыңдап тұрмын.", "unsupported":"Бұл браузерде сөйлеуді тану қолжетімсіз.",
-               "yesmsg":"Сіз иә дедіңіз.", "nomsg":"Сіз жоқ дедіңіз.", "unknown":"Команда танылмады. Қайталап көріңіз."},
-        "en": {"start":"Start", "stop":"Stop", "yes":"Yes", "no":"No",
-               "first":"Read the first point", "second":"Read the second point",
-               "third":"Read the third point", "all":"Read everything",
-               "ready":"Voice assistant is ready. Say start, stop, or a point number.",
-               "listening":"Listening.", "unsupported":"Speech recognition is not supported in this browser.",
-               "yesmsg":"You said yes.", "nomsg":"You said no.", "unknown":"Command not recognised. Please try again."},
-    }[language]
-    # Voice recognition is browser-dependent. This component reads the supplied
-    # page summary and handles the requested basic commands locally.
-    html = """
-    <div style="font-family:Arial,sans-serif;background:#fffef8;border:1px solid #dfe8d5;
-    border-radius:14px;padding:14px;color:#34402c">
-      <div style="font-weight:700;color:#4A6B2F;margin-bottom:8px">🎙 ECO AI</div>
-      <div id="eco-status" style="font-size:13px;margin-bottom:10px">__READY__</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button id="eco-start" style="background:#5A9A3A;color:white;border:0;padding:9px 15px;border-radius:9px">__START__</button>
-        <button id="eco-stop" style="background:#4A6B2F;color:white;border:0;padding:9px 15px;border-radius:9px">__STOP__</button>
-      </div>
-      <div style="font-size:12px;color:#66735e;margin-top:10px">
-        __FIRST__ · __SECOND__ · __THIRD__ · __ALL__ · __YES__ · __NO__
-      </div>
-    </div>
-    <script>
-    (() => {
-      const labels = __LABELS__;
-      const items = __ITEMS__;
-      const locale = "__LOCALE__";
-      const status = document.getElementById("eco-status");
-      const startButton = document.getElementById("eco-start");
-      const stopButton = document.getElementById("eco-stop");
-      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-      let recognition = null;
-      let listening = false;
-      function say(text) {
-        if (!("speechSynthesis" in window)) { status.textContent = text; return; }
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = locale;
-        window.speechSynthesis.speak(utterance);
-        status.textContent = text;
-      }
-      function normalise(s) {
-        return (s || "").toLowerCase().replace(/[.,!?;:]/g, "").trim();
-      }
-      function handleCommand(raw) {
-        const s = normalise(raw);
-        if (s.includes("стоп") || s.includes("тоқтат") || s === "stop") {
-          if (recognition) recognition.stop();
-          listening = false;
-          window.speechSynthesis.cancel();
-          status.textContent = labels.stop;
-          return;
-        }
-        if (s.includes("старт") || s.includes("баста") || s === "start") {
-          say(labels.listening);
-          return;
-        }
-        if (s === "да" || s === "иә" || s === "yes") { say(labels.yesmsg); return; }
-        if (s === "нет" || s === "жоқ" || s === "no") { say(labels.nomsg); return; }
-        if (s.includes("перв") || s.includes("бірінші") || s.includes("first")) { say(items[0] || labels.unknown); return; }
-        if (s.includes("втор") || s.includes("екінші") || s.includes("second")) { say(items[1] || labels.unknown); return; }
-        if (s.includes("трет") || s.includes("үшінші") || s.includes("third")) { say(items[2] || labels.unknown); return; }
-        if (s.includes("всё") || s.includes("все") || s.includes("барлы") || s.includes("everything")) { say(items.join(". ")); return; }
-        say(labels.unknown);
-      }
-      if (SR) {
-        recognition = new SR();
-        recognition.lang = locale;
-        recognition.continuous = true;
-        recognition.interimResults = false;
-        recognition.onresult = (event) => {
-          const result = event.results[event.results.length - 1][0].transcript;
-          status.textContent = result;
-          handleCommand(result);
-        };
-        recognition.onerror = (event) => { status.textContent = "Microphone: " + event.error; };
-        recognition.onend = () => {
-          if (listening) { try { recognition.start(); } catch(e) {} }
-        };
-      }
-      startButton.onclick = () => {
-        if (!SR) { say(labels.unsupported); return; }
-        listening = true;
-        try { recognition.start(); say(labels.listening); } catch(e) { status.textContent = String(e); }
-      };
-      stopButton.onclick = () => {
-        listening = false;
-        if (recognition) recognition.stop();
-        window.speechSynthesis.cancel();
-        status.textContent = labels.stop;
-      };
-    })();
-    </script>
-    """
-    replacements = {
-        "__READY__": labels["ready"], "__START__": labels["start"], "__STOP__": labels["stop"],
-        "__FIRST__": labels["first"], "__SECOND__": labels["second"], "__THIRD__": labels["third"],
-        "__ALL__": labels["all"], "__YES__": labels["yes"], "__NO__": labels["no"],
-        "__LABELS__": json.dumps(labels, ensure_ascii=False),
-        "__ITEMS__": items_json, "__LOCALE__": locale,
-    }
-    for old, new in replacements.items():
-        html = html.replace(old, new)
-    components.html(html, height=175, scrolling=False)
-
 # Session state
 for key, default in {
-    "stage": "intro", "lang": "ru", "mode": "normal",
+    "stage": "intro", "lang": "ru",
     "city_result": None, "air": None, "weather": None,
-    "osm_objects": [], "factory_query": "", "city_query": "",
+    "osm_objects": [], "factory_query": "", "city_query": "", "osm_error": None,
 }.items():
     if key not in st.session_state:
         st.session_state[key] = default
 
 # Header: small brand identity on every non-intro screen.
 def find_logo():
-    for candidate in ("eco_logo.png", "eco_logo.jpg", "eco_logo.jpeg"):
-        if os.path.exists(candidate):
+    project_dir = os.path.dirname(os.path.abspath(__file__))
+    for filename in ("eco_logo.png", "eco_logo.jpg", "eco_logo.jpeg"):
+        candidate = os.path.join(project_dir, filename)
+        if os.path.isfile(candidate):
             return candidate
     return None
 
@@ -466,8 +378,9 @@ def brand_header():
     with col1:
         logo_path = find_logo()
         if logo_path:
-            st.image(logo_path, width=62)
-        st.markdown('<div class="brand"><span class="brand-mark">◈</span> ECO AI KAZAKHSTAN</div>', unsafe_allow_html=True)
+            st.image(logo_path, width=112)
+        else:
+            st.error("Файл eco_logo.png не найден рядом с app.py.")
     with col2:
         if st.button("← " + ("Главная" if st.session_state.lang == "ru" else "Home"), use_container_width=True):
             st.session_state.stage = "login"
@@ -482,13 +395,8 @@ if st.session_state.stage == "intro":
         if logo_path:
             st.image(logo_path, use_container_width=True)
         else:
-            st.markdown(
-                f"<div style='background:{BG};padding:70px 15px;text-align:center;border-radius:20px'>"
-                f"<div style='font-size:80px;color:{GREEN}'>❧</div>"
-                f"<div style='font-size:46px;font-weight:800;color:{DARK}'>ECO AI</div></div>",
-                unsafe_allow_html=True,
-            )
-        st.markdown("<div style='text-align:center;color:#4A6B2F;font-weight:600'>KAZAKHSTAN</div>", unsafe_allow_html=True)
+            st.error("Не найден файл eco_logo.png. Добавьте его в корневую папку проекта рядом с app.py.")
+        
         if st.button("Продолжить / Continue / Жалғастыру", use_container_width=True):
             st.session_state.stage = "login"
             st.rerun()
@@ -505,8 +413,6 @@ if st.session_state.stage == "login":
         # These fields are intentionally demo-only; credentials are not saved or authenticated.
         st.text_input(t("login"), key="demo_login")
         st.text_input(t("password"), type="password", key="demo_password")
-        mode_choice = st.radio(t("mode"), [t("normal"), t("voice")], horizontal=True)
-        st.session_state.mode = "voice" if mode_choice == t("voice") else "normal"
         if st.button(t("continue"), use_container_width=True):
             st.session_state.stage = "app"
             st.rerun()
@@ -519,9 +425,6 @@ with st.sidebar:
     st.markdown("### ECO AI")
     language_label = st.selectbox(t("language"), list(LANGS.keys()), index=list(LANGS.values()).index(st.session_state.lang))
     st.session_state.lang = LANGS[language_label]
-    mode_choice = st.radio(t("mode"), [t("normal"), t("voice")],
-                           index=1 if st.session_state.mode == "voice" else 0)
-    st.session_state.mode = "voice" if mode_choice == t("voice") else "normal"
     st.markdown("---")
     st.caption("Open-Meteo · CAMS · OpenStreetMap")
 
@@ -544,13 +447,34 @@ if submitted:
                 lat, lon = float(city_data["latitude"]), float(city_data["longitude"])
                 air_data = get_air_quality(lat, lon)
                 weather_data = get_weather(lat, lon)
-                osm_data = get_osm_industrial_objects(lat, lon)
+                osm_error = None
+                try:
+                    osm_data = get_osm_industrial_objects(lat, lon)
+                except Exception as map_exc:
+                    osm_data = []
+                    osm_error = str(map_exc)
+                named_results = []
+                if factory_input.strip():
+                    try:
+                        named_results = search_factory_nominatim(factory_input.strip(), city_input.strip())
+                    except Exception as search_exc:
+                        osm_error = (osm_error + " | " if osm_error else "") + str(search_exc)
+                # Put direct enterprise matches first and remove duplicate map records.
+                combined = named_results + osm_data
+                seen = set()
+                osm_data = []
+                for obj in combined:
+                    key = (obj["name"].casefold(), round(obj["lat"], 4), round(obj["lon"], 4))
+                    if key not in seen:
+                        seen.add(key)
+                        osm_data.append(obj)
             st.session_state.city_query = city_input.strip()
             st.session_state.factory_query = factory_input.strip()
             st.session_state.city_result = city_data
             st.session_state.air = air_data
             st.session_state.weather = weather_data
             st.session_state.osm_objects = osm_data
+            st.session_state.osm_error = osm_error
             st.success(f"{city_data['name']}, {city_data.get('admin1', 'Kazakhstan')} — {lat:.4f}, {lon:.4f}")
         except Exception as exc:
             st.error(f"{t('search_error')} {exc}")
@@ -564,8 +488,6 @@ factory_query = st.session_state.factory_query.strip()
 if not city_data or not air_data or not weather_data:
     st.info(t("no_search"))
     st.markdown(f"<div class='eco-card'>{t('disclaimer')}</div>", unsafe_allow_html=True)
-    if st.session_state.mode == "voice":
-        voice_assistant(st.session_state.lang, [t("search"), t("map"), t("air")])
     st.stop()
 
 lat, lon = float(city_data["latitude"]), float(city_data["longitude"])
@@ -585,7 +507,7 @@ with tabs[0]:
     st.subheader(t("map"))
     st.caption(t("map_regions"))
     fmap = folium.Map(location=[48.0, 67.0], zoom_start=5, tiles="OpenStreetMap", control_scale=True)
-    Fullscreen(position="topright")
+    Fullscreen(position="topright").add_to(fmap)
     region_group = folium.FeatureGroup(name="Kazakhstan regional centres", show=True)
     for region_name, rlat, rlon in REGIONS:
         folium.CircleMarker(
@@ -605,8 +527,11 @@ with tabs[0]:
     ).add_to(fmap)
     factory_matches = []
     if factory_query:
-        q = factory_query.casefold()
-        factory_matches = [o for o in osm_data if q in o["name"].casefold()]
+        q = re.sub(r"[^a-zа-яәіңғүұқөһ0-9]", "", factory_query.casefold())
+        factory_matches = [
+            o for o in osm_data
+            if q and q in re.sub(r"[^a-zа-яәіңғүұқөһ0-9]", "", o["name"].casefold())
+        ]
     visible_objects = factory_matches if factory_matches else osm_data[:80]
     factory_group = folium.FeatureGroup(name="OSM industrial objects", show=True)
     for obj in visible_objects:
@@ -622,6 +547,9 @@ with tabs[0]:
     st.caption("Карта: ©️ OpenStreetMap contributors. " + t("map_regions"))
     if factory_query and not factory_matches:
         st.warning(t("not_found"))
+        st.caption("Поиск проверяет OpenStreetMap/Nominatim. Это открытая карта, а не полный официальный реестр предприятий Казахстана.")
+    if st.session_state.get("osm_error"):
+        st.caption("Часть результатов карты временно недоступна: " + st.session_state.osm_error[:300])
     st.write(f"**{t('osm_found')}:** {len(osm_data)}")
     if visible_objects:
         st.dataframe(pd.DataFrame([
@@ -638,7 +566,7 @@ with tabs[1]:
     pollutants = [
         ("PM2.5", "pm2_5", "µg/m³"),
         ("PM10", "pm10", "µg/m³"),
-        ("CO", "carbon_monoxide", "µg/m³"),
+        ("CO (угарный газ)", "carbon_monoxide", "µg/m³"),
         ("NO₂", "nitrogen_dioxide", "µg/m³"),
         ("SO₂", "sulphur_dioxide", "µg/m³"),
         ("O₃", "ozone", "µg/m³"),
@@ -674,6 +602,7 @@ with tabs[1]:
             st.info(t("no_chart"))
     st.caption("Source: Open-Meteo Air Quality API / CAMS. " + t("model_notice"))
     st.markdown(f"[Open-Meteo Air Quality API](https://open-meteo.com/en/docs/air-quality-api)")
+    st.caption("CO — это угарный газ (carbon monoxide), не CO₂. В этом API показатель CO₂ не подменяется показателем CO.")
 
 # 3. Wind
 with tabs[2]:
@@ -749,22 +678,6 @@ with tabs[5]:
         "weather_model": weather_data.get("current", {}),
         "retrieved_at_local": datetime.now().astimezone().isoformat(timespec="minutes"),
     })
-
-# Voice helper on the page, with language matching the selected UI language.
-if st.session_state.mode == "voice":
-    st.markdown("---")
-    st.subheader(t("voice_title"))
-    st.caption(t("voice_hint"))
-    voice_assistant(
-        st.session_state.lang,
-        [
-            f"{t('map')}: {t('map_regions')}",
-            f"{t('air')}: {t('model_notice')}",
-            f"{t('wind')}: {t('wind_speed')} {wind_speed if wind_speed is not None else '—'} km/h, {t('wind_dir')} {wind_compass(wind_dir)}",
-            t("company") + ": " + (factory_matches[0]["name"] if factory_matches else t("not_found")),
-            t("risk") + ": " + risk_text,
-        ],
-    )
 
 st.markdown("---")
 st.markdown(f"<div class='eco-card'>{t('disclaimer')}</div>", unsafe_allow_html=True)
