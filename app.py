@@ -8,6 +8,7 @@ import pandas as pd
 import plotly.express as px
 import requests
 import streamlit as st
+import streamlit.components.v1 as components
 from folium.plugins import Fullscreen
 from streamlit_folium import st_folium
 
@@ -88,6 +89,21 @@ TEXT = {
         "source": "Источники данных", "risk_low": "Низкий модельный индикатор",
         "risk_mid": "Умеренный модельный индикатор", "risk_high": "Повышенный модельный индикатор",
         "risk_unknown": "Недостаточно данных для оценки",
+        "risk_sensitive": "Повышенный риск для чувствительных групп",
+        "risk_high": "Высокий уровень загрязнения воздуха",
+        "risk_very_high": "Очень высокий уровень загрязнения воздуха",
+        "risk_hazardous": "Опасный уровень загрязнения воздуха",
+        "risk_fair": "Хорошее / приемлемое качество воздуха",
+        "risk_poor": "Плохое качество воздуха",
+        "risk_extreme": "Чрезвычайно плохое качество воздуха",
+        "risk_site": "Точка оценки",
+        "risk_city_point": "Модельная точка в центре города",
+        "risk_factory_point": "Модельная точка рядом с найденным предприятием",
+        "risk_detail_note": "Это предварительный скрининг качества воздуха по модели, а не официальная санитарная или экологическая экспертиза предприятия.",
+        "risk_pollutants_title": "Текущие модельные концентрации загрязнителей",
+        "risk_aqi_legend": "Категории US AQI: 0–50 — хорошее; 51–100 — умеренное; 101–150 — вредно для чувствительных групп; 151–200 — вредно; 201–300 — очень вредно; 301+ — опасное.",
+        "risk_missing_notice": "Индекс качества воздуха недоступен. Уровень риска не присваивается.",
+        "wind_map_caption": "Анимированная карта ветра Windy: потоки и прогнозная шкала обновляются на карте. Это модель прогноза, а не измерения датчика.",
         "no_factory": "Предприятие не найдено среди объектов OpenStreetMap в выбранной окрестности.",
         "osm_found": "Объекты промышленности из OpenStreetMap в окрестности города",
         "map_regions": "Региональные центры и подписи на карте. Это не административные границы.",
@@ -116,6 +132,21 @@ TEXT = {
         "source": "Дереккөздер", "risk_low": "Модельдік көрсеткіш төмен",
         "risk_mid": "Модельдік көрсеткіш орташа", "risk_high": "Модельдік көрсеткіш жоғары",
         "risk_unknown": "Бағалау үшін дерек жеткіліксіз",
+        "risk_sensitive": "Сезімтал топтар үшін жоғары қауіп",
+        "risk_high": "Ауа ластануының жоғары деңгейі",
+        "risk_very_high": "Ауа ластануының өте жоғары деңгейі",
+        "risk_hazardous": "Ауа ластануының қауіпті деңгейі",
+        "risk_fair": "Ауа сапасы жақсы / қанағаттанарлық",
+        "risk_poor": "Ауа сапасы нашар",
+        "risk_extreme": "Ауа сапасы өте нашар",
+        "risk_site": "Бағалау нүктесі",
+        "risk_city_point": "Қала орталығындағы модельдік нүкте",
+        "risk_factory_point": "Табылған кәсіпорын маңындағы модельдік нүкте",
+        "risk_detail_note": "Бұл модель бойынша ауа сапасын алдын ала бағалау. Бұл кәсіпорынның ресми санитариялық немесе экологиялық сараптамасы емес.",
+        "risk_pollutants_title": "Ластаушы заттардың ағымдағы модельдік концентрациялары",
+        "risk_aqi_legend": "US AQI санаттары: 0–50 — жақсы; 51–100 — орташа; 101–150 — сезімтал топтарға зиянды; 151–200 — зиянды; 201–300 — өте зиянды; 301+ — қауіпті.",
+        "risk_missing_notice": "Ауа сапасының индексі қолжетімсіз. Қауіп деңгейі берілмейді.",
+        "wind_map_caption": "Windy желінің анимациялық картасы: жел ағындары мен болжам шкаласы картада көрсетіледі. Бұл датчик өлшемі емес, модель болжамы.",
         "no_factory": "Таңдалған аумақта OpenStreetMap деректерінен кәсіпорын табылмады.",
         "osm_found": "Қала маңындағы OpenStreetMap өнеркәсіп нысандары",
         "map_regions": "Картадағы өңірлік орталықтар мен атаулар. Бұл әкімшілік шекаралар емес.",
@@ -141,7 +172,22 @@ TEXT = {
         "official_notice": "Official measurements are shown only when a verified source is available.",
         "source": "Data sources", "risk_low": "Low model indicator",
         "risk_mid": "Moderate model indicator", "risk_high": "Elevated model indicator",
-        "risk_unknown": "Not enough data to assess", "no_factory": "No enterprise was found in OpenStreetMap within the selected area.",
+        "risk_unknown": "Not enough data to assess",
+        "risk_sensitive": "Unhealthy for sensitive groups",
+        "risk_high": "Unhealthy air quality",
+        "risk_very_high": "Very unhealthy air quality",
+        "risk_hazardous": "Hazardous air quality",
+        "risk_fair": "Good / fair air quality",
+        "risk_poor": "Poor air quality",
+        "risk_extreme": "Extremely poor air quality",
+        "risk_site": "Assessment point",
+        "risk_city_point": "Model grid point in the city centre",
+        "risk_factory_point": "Model grid point near the found enterprise",
+        "risk_detail_note": "This is a preliminary model-based air-quality screening, not an official sanitary or environmental assessment of the enterprise.",
+        "risk_pollutants_title": "Current modelled pollutant concentrations",
+        "risk_aqi_legend": "US AQI categories: 0–50 good; 51–100 moderate; 101–150 unhealthy for sensitive groups; 151–200 unhealthy; 201–300 very unhealthy; 301+ hazardous.",
+        "risk_missing_notice": "Air quality index is unavailable. No risk category is assigned.",
+        "wind_map_caption": "Animated Windy wind map: animated flow and forecast timeline are shown on the map. This is model output, not a sensor measurement.", "no_factory": "No enterprise was found in OpenStreetMap within the selected area.",
         "osm_found": "OpenStreetMap industrial objects near the city",
         "map_regions": "Regional centres and labels on the map. These are not administrative boundaries.",
         "disclaimer": "ECO AI is an informational and educational project. Model data do not prove that a specific factory is a pollution source.",
@@ -240,6 +286,7 @@ def search_factory_nominatim(factory, city):
             "website": "", "osm_type": item.get("osm_type", ""),
             "osm_id": item.get("osm_id", ""),
             "display_name": item.get("display_name", ""),
+            "direct_search_result": True,
         })
     return results
 
@@ -249,7 +296,7 @@ def get_air_quality(lat, lon):
     params = {
         "latitude": lat, "longitude": lon,
         "current": "european_aqi,us_aqi,pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone",
-        "hourly": "pm10,pm2_5,nitrogen_dioxide,sulphur_dioxide,ozone",
+        "hourly": "pm10,pm2_5,carbon_dioxide,nitrogen_dioxide,sulphur_dioxide,ozone,us_aqi,european_aqi",
         "forecast_days": 2, "timezone": "auto",
     }
     response = requests.get(url, params=params, headers=HEADERS, timeout=25)
@@ -338,22 +385,49 @@ def numeric(value):
         return None
 
 def risk_label(air):
+    """Classify the supplied modelled AQI; this is not a facility risk assessment."""
     current = air.get("current", {})
     us_aqi = numeric(current.get("us_aqi"))
     eu_aqi = numeric(current.get("european_aqi"))
     if us_aqi is not None:
         if us_aqi <= 50:
-            return t("risk_low"), "green", "US AQI"
+            return t("risk_low"), "green", "US AQI", us_aqi
         if us_aqi <= 100:
-            return t("risk_mid"), "orange", "US AQI"
-        return t("risk_high"), "red", "US AQI"
+            return t("risk_mid"), "orange", "US AQI", us_aqi
+        if us_aqi <= 150:
+            return t("risk_sensitive"), "orange", "US AQI", us_aqi
+        if us_aqi <= 200:
+            return t("risk_high"), "red", "US AQI", us_aqi
+        if us_aqi <= 300:
+            return t("risk_very_high"), "red", "US AQI", us_aqi
+        return t("risk_hazardous"), "red", "US AQI", us_aqi
     if eu_aqi is not None:
         if eu_aqi <= 20:
-            return t("risk_low"), "green", "European AQI"
+            return t("risk_low"), "green", "European AQI", eu_aqi
         if eu_aqi <= 40:
-            return t("risk_mid"), "orange", "European AQI"
-        return t("risk_high"), "red", "European AQI"
-    return t("risk_unknown"), "gray", "—"
+            return t("risk_fair"), "green", "European AQI", eu_aqi
+        if eu_aqi <= 60:
+            return t("risk_mid"), "orange", "European AQI", eu_aqi
+        if eu_aqi <= 80:
+            return t("risk_poor"), "orange", "European AQI", eu_aqi
+        if eu_aqi <= 100:
+            return t("risk_very_high"), "red", "European AQI", eu_aqi
+        return t("risk_extreme"), "red", "European AQI", eu_aqi
+    return t("risk_unknown"), "gray", "—", None
+
+
+def current_hourly_value(data, key):
+    """Return hourly value aligned with API current.time (used for CO2)."""
+    hourly = data.get("hourly", {})
+    times = hourly.get("time", [])
+    values = hourly.get(key, [])
+    if not times or not values:
+        return None
+    target = data.get("current", {}).get("time")
+    if target in times:
+        idx = times.index(target)
+        return numeric(values[idx]) if idx < len(values) else None
+    return numeric(values[0])
 
 # Session state
 for key, default in {
@@ -492,9 +566,41 @@ if not city_data or not air_data or not weather_data:
 
 lat, lon = float(city_data["latitude"]), float(city_data["longitude"])
 city_name = city_data["name"]
+
+# Prefer an enterprise result returned directly by the name search; otherwise
+# use a normalized name match among the nearby OSM industrial objects.
+q = re.sub(r"[^a-zа-яәіңғүұқөһ0-9]", "", factory_query.casefold())
+factory_matches = []
+if q:
+    for obj in osm_data:
+        name_key = re.sub(r"[^a-zа-яәіңғүұқөһ0-9]", "", obj.get("name", "").casefold())
+        display_key = re.sub(r"[^a-zа-яәіңғүұқөһ0-9]", "", obj.get("display_name", "").casefold())
+        if obj.get("direct_search_result") or q in name_key or q in display_key or name_key in q:
+            factory_matches.append(obj)
+
+# If the requested enterprise was located, request model data at its mapped
+# coordinates. If not, keep the city-centre grid and label it explicitly.
+assessment_lat, assessment_lon = lat, lon
+assessment_name = city_name
+assessment_is_factory = False
+if factory_matches:
+    selected_for_assessment = factory_matches[0]
+    assessment_lat = float(selected_for_assessment["lat"])
+    assessment_lon = float(selected_for_assessment["lon"])
+    assessment_name = selected_for_assessment["name"]
+    assessment_is_factory = True
+    try:
+        air_data = get_air_quality(assessment_lat, assessment_lon)
+        weather_data = get_weather(assessment_lat, assessment_lon)
+    except Exception:
+        # Keep the already retrieved city data if point-level data is unavailable.
+        assessment_lat, assessment_lon = lat, lon
+        assessment_name = city_name
+        assessment_is_factory = False
+
 current_air = air_data.get("current", {})
 current_weather = weather_data.get("current", {})
-risk_text, risk_color, risk_source = risk_label(air_data)
+risk_text, risk_color, risk_source, risk_value = risk_label(air_data)
 
 st.markdown(f"### {city_name} — {city_data.get('admin1', 'Kazakhstan')}")
 st.markdown(f"<span class='eco-pill'>{t('model_notice')}</span>", unsafe_allow_html=True)
@@ -525,13 +631,6 @@ with tabs[0]:
         popup=f"{city_name}<br>Open-Meteo model grid point",
         icon=folium.Icon(color="green", icon="leaf", prefix="fa"),
     ).add_to(fmap)
-    factory_matches = []
-    if factory_query:
-        q = re.sub(r"[^a-zа-яәіңғүұқөһ0-9]", "", factory_query.casefold())
-        factory_matches = [
-            o for o in osm_data
-            if q and q in re.sub(r"[^a-zа-яәіңғүұқөһ0-9]", "", o["name"].casefold())
-        ]
     visible_objects = factory_matches if factory_matches else osm_data[:80]
     factory_group = folium.FeatureGroup(name="OSM industrial objects", show=True)
     for obj in visible_objects:
@@ -576,6 +675,8 @@ with tabs[1]:
         value = numeric(current_air.get(key))
         with cols[i % 3]:
             st.metric(label, f"{value:.2f} {unit}" if value is not None else "—")
+    co2_value = current_hourly_value(air_data, "carbon_dioxide")
+    st.metric("CO₂ (углекислый газ)", f"{co2_value:.1f} ppm" if co2_value is not None else "—")
     aqi_value = numeric(current_air.get("us_aqi"))
     if aqi_value is None:
         aqi_value = numeric(current_air.get("european_aqi"))
@@ -602,9 +703,9 @@ with tabs[1]:
             st.info(t("no_chart"))
     st.caption("Source: Open-Meteo Air Quality API / CAMS. " + t("model_notice"))
     st.markdown(f"[Open-Meteo Air Quality API](https://open-meteo.com/en/docs/air-quality-api)")
-    st.caption("CO — это угарный газ (carbon monoxide), не CO₂. В этом API показатель CO₂ не подменяется показателем CO.")
+    st.caption("CO — угарный газ (carbon monoxide, µg/m³). CO₂ — углекислый газ (carbon dioxide, ppm); это отдельный часовой модельный показатель.")
 
-# 3. Wind
+# 3. Wind — animated map with moving wind particles and a forecast timeline
 with tabs[2]:
     st.subheader(t("wind"))
     wind_speed = numeric(current_weather.get("wind_speed_10m"))
@@ -616,16 +717,26 @@ with tabs[2]:
     c2.metric(t("wind_dir"), f"{wind_dir:.0f}° {wind_compass(wind_dir)}" if wind_dir is not None else "—")
     c3.metric(t("temperature"), f"{temp:.1f} °C" if temp is not None else "—")
     c4.metric(t("humidity"), f"{humidity:.0f}%" if humidity is not None else "—")
-    if wind_dir is not None:
-        st.markdown(
-            f"<div class='eco-card' style='text-align:center'>"
-            f"<div style='font-size:14px;color:{DARK}'>Wind direction</div>"
-            f"<div style='font-size:64px;color:{GREEN};transform:rotate({wind_dir}deg)'>↑</div>"
-            f"<b>{wind_compass(wind_dir)} · {wind_dir:.0f}°</b></div>",
-            unsafe_allow_html=True,
-        )
-    st.caption("Wind data are weather-model output, not proof of pollutant transport from a particular factory.")
-    st.markdown("[Open-Meteo Weather API](https://open-meteo.com/en/docs)")
+
+    # Windy provides the animated wind field and its own forecast timeline.
+    windy_url = (
+        "https://embed.windy.com/embed.html?"
+        f"lat={assessment_lat:.5f}&lon={assessment_lon:.5f}"
+        f"&detailLat={assessment_lat:.5f}&detailLon={assessment_lon:.5f}"
+        "&width=1000&height=600&zoom=6&level=surface&overlay=wind"
+        "&product=ecmwf&menu=&message=&marker=true&calendar=now"
+        "&pressure=true&type=map&location=coordinates&detail="
+        "&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1"
+    )
+    iframe = (
+        '<iframe title="Animated wind map" '
+        f'src="{windy_url}" '
+        'style="width:100%;height:610px;border:0;border-radius:16px;" '
+        'loading="lazy" allowfullscreen></iframe>'
+    )
+    components.html(iframe, height=620, scrolling=False)
+    st.caption(t("wind_map_caption"))
+    st.markdown("[Windy — интерактивная карта ветра](https://www.windy.com/) · [Open-Meteo Weather API](https://open-meteo.com/en/docs)")
 
 # 4. Enterprise profile
 with tabs[3]:
@@ -649,35 +760,132 @@ with tabs[3]:
     st.write(t("data_missing"))
     st.markdown("[Казгидромет — официальный сайт](https://www.kazhydromet.kz/)")
 
-# 5. Environmental risk screening
+# 5. Environmental risk screening — detailed, but clearly model-based
 with tabs[4]:
     st.subheader(t("risk"))
-    st.info("Предварительный индикатор основан только на модельном индексе воздуха в координатах города. Это не официальная оценка риска и не оценка конкретного предприятия.")
-    st.markdown(f"### {risk_text}")
-    st.write(f"Index source: {risk_source}")
-    if risk_color == "green":
-        st.success("Model index falls in the lower band.")
-    elif risk_color == "orange":
-        st.warning("Model index falls in a moderate band.")
-    elif risk_color == "red":
-        st.error("Model index is in an elevated band.")
-    else:
-        st.info(t("risk_unknown"))
-    st.write("Для полноценной оценки нужны подтверждённые измерения, нормативы, временной период, метеоданные и проверенная методика.")
-    st.write("A wind direction or a nearby factory alone cannot establish the source of pollution.")
+    st.info(t("risk_detail_note"))
+    point_label = t("risk_factory_point") if assessment_is_factory else t("risk_city_point")
+    st.write(f"**{t('risk_site')}:** {assessment_name} — {point_label}")
+    st.write(f"**{t('coordinates')}:** {assessment_lat:.5f}, {assessment_lon:.5f}")
 
-# 6. Analysis
+    if risk_value is None:
+        st.warning(t("risk_missing_notice"))
+    else:
+        metric_col, label_col = st.columns([1, 2])
+        with metric_col:
+            st.metric(risk_source, f"{risk_value:.0f}")
+        with label_col:
+            st.markdown(f"### {risk_text}")
+            st.caption("AQI = modelled Air Quality Index at the selected coordinate.")
+        if risk_color == "green":
+            st.success(risk_text)
+        elif risk_color == "orange":
+            st.warning(risk_text)
+        else:
+            st.error(risk_text)
+
+    st.markdown("#### " + t("risk_pollutants_title"))
+    risk_pollutants = [
+        ("PM2.5", "pm2_5", "µg/m³"),
+        ("PM10", "pm10", "µg/m³"),
+        ("NO₂", "nitrogen_dioxide", "µg/m³"),
+        ("SO₂", "sulphur_dioxide", "µg/m³"),
+        ("O₃", "ozone", "µg/m³"),
+        ("CO — угарный газ", "carbon_monoxide", "µg/m³"),
+        ("CO₂ — углекислый газ", "carbon_dioxide", "ppm"),
+    ]
+    rows = []
+    for pollutant_name, key, unit in risk_pollutants:
+        value = numeric(current_air.get(key))
+        if key == "carbon_dioxide":
+            value = current_hourly_value(air_data, key)
+        rows.append({
+            t("pollutant"): pollutant_name,
+            t("value"): f"{value:.2f}" if value is not None else "—",
+            t("unit"): unit,
+            "Статус": "Получено из модели" if value is not None else "Нет данных",
+        })
+    st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+
+    # Concentrations in µg/m³ share a common unit and can be compared on one chart.
+    chart_rows = []
+    for pollutant_name, key, unit in risk_pollutants:
+        if unit != "µg/m³":
+            continue
+        value = numeric(current_air.get(key))
+        if value is not None:
+            chart_rows.append({"Pollutant": pollutant_name, "Concentration": value})
+    if chart_rows:
+        chart_df = pd.DataFrame(chart_rows).sort_values("Concentration", ascending=False)
+        risk_fig = px.bar(chart_df, x="Pollutant", y="Concentration", title="Modelled concentrations (µg/m³)")
+        risk_fig.update_layout(paper_bgcolor=BG, plot_bgcolor="#fffef8")
+        st.plotly_chart(risk_fig, use_container_width=True)
+
+    st.caption(t("risk_aqi_legend"))
+    st.write("Индекс AQI описывает краткосрочное качество воздуха по модели. Он не является проверкой соблюдения казахстанских нормативов и не доказывает, что конкретный завод вызвал загрязнение.")
+    st.write("Для официального вывода нужны данные аккредитованных постов наблюдения, применимые нормативы Казахстана и подтверждённая методика оценки предприятия.")
+    st.markdown("[Методика US AQI — US EPA](https://www.airnow.gov/aqi/aqi-basics/) · [European AQI — EEA](https://airindex.eea.europa.eu/AQI/)")
+
+# 6. Analysis — readable charts and tables instead of a raw JSON dump
 with tabs[5]:
     st.subheader(t("analysis"))
-    st.write("Доступны почасовые модельные данные прогноза; исторический тренд не строится, если API не предоставляет соответствующий период.")
-    st.write("Hourly model forecast is available; no historical trend is invented.")
-    st.json({
-        "city": city_name,
-        "coordinates": {"latitude": lat, "longitude": lon},
-        "air_quality_model": air_data.get("current", {}),
-        "weather_model": weather_data.get("current", {}),
-        "retrieved_at_local": datetime.now().astimezone().isoformat(timespec="minutes"),
-    })
+    st.caption(t("model_notice"))
+    aqi_now = numeric(current_air.get("us_aqi"))
+    if aqi_now is None:
+        aqi_now = numeric(current_air.get("european_aqi"))
+    pm25_now = numeric(current_air.get("pm2_5"))
+    pm10_now = numeric(current_air.get("pm10"))
+    wind_now = numeric(current_weather.get("wind_speed_10m"))
+    m1, m2, m3, m4 = st.columns(4)
+    m1.metric("US AQI" if numeric(current_air.get("us_aqi")) is not None else "European AQI",
+              f"{aqi_now:.0f}" if aqi_now is not None else "—")
+    m2.metric("PM2.5", f"{pm25_now:.2f} µg/m³" if pm25_now is not None else "—")
+    m3.metric("PM10", f"{pm10_now:.2f} µg/m³" if pm10_now is not None else "—")
+    m4.metric(t("wind_speed"), f"{wind_now:.1f} km/h" if wind_now is not None else "—")
+
+    air_hourly = air_data.get("hourly", {})
+    air_times = air_hourly.get("time", [])
+    aqi_series = air_hourly.get("us_aqi", [])
+    if not aqi_series:
+        aqi_series = air_hourly.get("european_aqi", [])
+        aqi_title = "European AQI — hourly model forecast"
+    else:
+        aqi_title = "US AQI — hourly model forecast"
+    if air_times and aqi_series and len(air_times) == len(aqi_series):
+        aqi_df = pd.DataFrame({"time": air_times[:48], "AQI": aqi_series[:48]})
+        aqi_fig = px.line(aqi_df, x="time", y="AQI", markers=True, title=aqi_title)
+        aqi_fig.update_layout(paper_bgcolor=BG, plot_bgcolor="#fffef8")
+        st.plotly_chart(aqi_fig, use_container_width=True)
+    else:
+        st.info("Почасовой ряд AQI сейчас не предоставлен API.")
+
+    pollutant_rows = []
+    for label, key, unit in [
+        ("PM2.5", "pm2_5", "µg/m³"), ("PM10", "pm10", "µg/m³"),
+        ("NO₂", "nitrogen_dioxide", "µg/m³"), ("SO₂", "sulphur_dioxide", "µg/m³"),
+        ("O₃", "ozone", "µg/m³"), ("CO", "carbon_monoxide", "µg/m³"),
+        ("CO₂", "carbon_dioxide", "ppm"),
+    ]:
+        val = numeric(current_air.get(key))
+        if key == "carbon_dioxide":
+            val = current_hourly_value(air_data, key)
+        pollutant_rows.append({"Показатель": label, "Значение": f"{val:.2f}" if val is not None else "—", "Единица": unit})
+    st.markdown("#### Сводка модельных концентраций")
+    st.dataframe(pd.DataFrame(pollutant_rows), use_container_width=True, hide_index=True)
+
+    weather_hourly = weather_data.get("hourly", {})
+    wind_times = weather_hourly.get("time", [])
+    wind_speeds = weather_hourly.get("wind_speed_10m", [])
+    if wind_times and wind_speeds and len(wind_times) == len(wind_speeds):
+        wind_df = pd.DataFrame({"time": wind_times[:48], "Wind speed (km/h)": wind_speeds[:48]})
+        wind_fig = px.line(wind_df, x="time", y="Wind speed (km/h)", markers=True,
+                           title="Wind speed — hourly model forecast")
+        wind_fig.update_layout(paper_bgcolor=BG, plot_bgcolor="#fffef8")
+        st.plotly_chart(wind_fig, use_container_width=True)
+
+    st.caption("Временные ряды ниже — прогнозные модельные данные, а не исторические измерения с постов наблюдения.")
+    st.write(f"Точка экологической оценки: {assessment_name} ({assessment_lat:.5f}, {assessment_lon:.5f}).")
+    st.markdown("[Open-Meteo Air Quality API](https://open-meteo.com/en/docs/air-quality-api) · [Open-Meteo Weather API](https://open-meteo.com/en/docs)")
 
 st.markdown("---")
 st.markdown(f"<div class='eco-card'>{t('disclaimer')}</div>", unsafe_allow_html=True)
