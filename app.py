@@ -1317,7 +1317,7 @@ with tabs[5]:
    # Only compare pollutants with the same unit (µg/m³); CO₂ in ppm is excluded.
     
 
-        if chart_rows:
+    if chart_rows:
         chart_df = pd.DataFrame(chart_rows).sort_values(
             "Concentration", ascending=True
         )
