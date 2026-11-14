@@ -80,7 +80,7 @@ TEXT = {
         "search": "Найти предприятие", "map": "Интерактивная карта",
         "air": "Загрязнение воздуха", "wind": "Ветер",
         "company": "Карточка предприятия", "risk": "Экологические риски",
-        "analysis": "Анализ данных", "team": "О команде",
+        "analysis": "Анализ данных", "team": "О команде", "pollution_map": "Карта загрязнения Казахстана",
         "no_search": "Введите город и нажмите кнопку поиска.",
         "not_found": "Точное совпадение предприятия в открытых картографических данных не найдено.",
         "data_missing": "Данные недоступны для этой точки. Мы не подставляем вымышленные значения.",
@@ -123,7 +123,7 @@ TEXT = {
         "factory": "Кәсіпорын / зауыт атауы", "search": "Кәсіпорынды іздеу",
         "map": "Интерактивті карта", "air": "Ауа ластануы", "wind": "Жел",
         "company": "Кәсіпорын картасы", "risk": "Экологиялық тәуекелдер",
-        "analysis": "Деректерді талдау", "team": "Команда туралы",
+        "analysis": "Деректерді талдау", "team": "Команда туралы", "pollution_map": "Қазақстанның ластану картасы",
         "no_search": "Қаланы енгізіп, іздеу түймесін басыңыз.",
         "not_found": "Ашық карта деректерінен кәсіпорынның дәл сәйкестігі табылмады.",
         "data_missing": "Бұл нүкте үшін деректер қолжетімсіз. Жалған мәндер қолданылмайды.",
@@ -165,7 +165,7 @@ TEXT = {
         "continue": "Continue", "city": "Kazakhstan city", "factory": "Enterprise / factory name",
         "search": "Find enterprise", "map": "Interactive map", "air": "Air pollution",
         "wind": "Wind", "company": "Enterprise profile", "risk": "Environmental risks",
-        "analysis": "Data analysis", "team": "About the team", "no_search": "Enter a city and press Search.",
+        "analysis": "Data analysis", "team": "About the team", "pollution_map": "Kazakhstan pollution map", "no_search": "Enter a city and press Search.",
         "not_found": "No exact enterprise match was found in open map data.",
         "data_missing": "Data are unavailable for this point. No invented values are displayed.",
         "model_notice": "Open-Meteo/CAMS model data, not a direct measurement at the factory.",
@@ -198,6 +198,56 @@ TEXT = {
         "search_error": "Could not retrieve data:",
     },
 }
+
+# Representative city-centre points used for a countrywide model overview.
+# These are sampling points for the atmospheric model, not monitoring stations.
+NATIONAL_CITIES = [
+    ("Астана", 51.1694, 71.4491),
+    ("Алматы", 43.2383, 76.9450),
+    ("Шымкент", 42.3417, 69.5901),
+    ("Караганда", 49.8060, 73.0850),
+    ("Темиртау", 50.0540, 72.9640),
+    ("Тараз", 42.9000, 71.3670),
+    ("Актобе", 50.2839, 57.1670),
+    ("Атырау", 47.1170, 51.8830),
+    ("Павлодар", 52.3000, 76.9500),
+    ("Усть-Каменогорск", 49.9480, 82.6280),
+    ("Семей", 50.4110, 80.2270),
+    ("Костанай", 53.2170, 63.6330),
+    ("Петропавловск", 54.8670, 69.1500),
+    ("Кокшетау", 53.2830, 69.3830),
+    ("Уральск", 51.2330, 51.3670),
+    ("Кызылорда", 44.8500, 65.4830),
+    ("Актау", 43.6500, 51.1670),
+    ("Талдыкорган", 45.0170, 78.3670),
+    ("Туркестан", 43.3000, 68.2500),
+    ("Жезказган", 47.7830, 67.7170),
+    ("Балхаш", 46.8480, 74.9950),
+    ("Риддер", 50.3440, 83.5120),
+    ("Рудный", 52.9720, 63.1160),
+    ("Экибастуз", 51.7230, 75.3220),
+    ("Кульсары", 46.9570, 54.0190),
+    ("Хромтау", 50.2510, 58.4420),
+]
+
+# Kazhydromet publications identify these settlements as part of the air-monitoring
+# network. When an exact station registry cannot be reached, markers are deliberately
+# placed at settlement centres and labelled approximate (not as exact station sites).
+MONITORING_SETTLEMENT_FALLBACK = [
+    ("Астана", 51.1694, 71.4491), ("Алматы", 43.2383, 76.9450),
+    ("Шымкент", 42.3417, 69.5901), ("Тараз", 42.9000, 71.3670),
+    ("Караганда", 49.8060, 73.0850), ("Темиртау", 50.0540, 72.9640),
+    ("Актобе", 50.2839, 57.1670), ("Атырау", 47.1170, 51.8830),
+    ("Актау", 43.6500, 51.1670), ("Павлодар", 52.3000, 76.9500),
+    ("Усть-Каменогорск", 49.9480, 82.6280), ("Семей", 50.4110, 80.2270),
+    ("Костанай", 53.2170, 63.6330), ("Петропавловск", 54.8670, 69.1500),
+    ("Кокшетау", 53.2830, 69.3830), ("Уральск", 51.2330, 51.3670),
+    ("Кызылорда", 44.8500, 65.4830), ("Талдыкорган", 45.0170, 78.3670),
+    ("Туркестан", 43.3000, 68.2500), ("Жезказган", 47.7830, 67.7170),
+    ("Балхаш", 46.8480, 74.9950), ("Риддер", 50.3440, 83.5120),
+    ("Рудный", 52.9720, 63.1160), ("Экибастуз", 51.7230, 75.3220),
+    ("Кульсары", 46.9570, 54.0190), ("Хромтау", 50.2510, 58.4420),
+]
 
 # Approximate regional-centre coordinates for map orientation only.
 # Markers label centres; no administrative border polygons are claimed.
@@ -315,6 +365,138 @@ def get_weather(lat, lon):
     response = requests.get(url, params=params, headers=HEADERS, timeout=25)
     response.raise_for_status()
     return response.json()
+
+@st.cache_data(ttl=1800, show_spinner=False)
+def get_national_air_overview():
+    """One batched Open-Meteo Air Quality request for representative Kazakhstan cities."""
+    latitudes = ",".join(f"{point[1]:.5f}" for point in NATIONAL_CITIES)
+    longitudes = ",".join(f"{point[2]:.5f}" for point in NATIONAL_CITIES)
+    response = requests.get(
+        "https://air-quality-api.open-meteo.com/v1/air-quality",
+        params={
+            "latitude": latitudes,
+            "longitude": longitudes,
+            "current": "us_aqi,pm2_5,pm10",
+            "timezone": "auto",
+        },
+        headers=HEADERS,
+        timeout=35,
+    )
+    response.raise_for_status()
+    payload = response.json()
+    records = payload if isinstance(payload, list) else [payload]
+    result = []
+    for idx, city in enumerate(NATIONAL_CITIES):
+        if idx >= len(records):
+            break
+        current = records[idx].get("current", {}) if isinstance(records[idx], dict) else {}
+        result.append({
+            "name": city[0], "lat": city[1], "lon": city[2],
+            "aqi": current.get("us_aqi"),
+            "pm25": current.get("pm2_5"),
+            "pm10": current.get("pm10"),
+            "time": current.get("time", ""),
+        })
+    return result
+
+
+@st.cache_data(ttl=86400, show_spinner=False)
+def get_monitoring_station_registry():
+    """Load georeferenced monitoring posts; fall back to labelled locality centres."""
+    candidate_urls = [
+        "https://raw.githubusercontent.com/qazybekb/AirDatakz-OpenData/main/stations.geojson",
+        "https://raw.githubusercontent.com/qazybekb/AirDatakz-OpenData/main/csv/stations.geojson",
+    ]
+    for url in candidate_urls:
+        try:
+            response = requests.get(url, headers=HEADERS, timeout=(5, 12))
+            response.raise_for_status()
+            geo = response.json()
+            features = geo.get("features", []) if isinstance(geo, dict) else []
+            stations = []
+            for feature in features:
+                geometry = feature.get("geometry") or {}
+                props = feature.get("properties") or {}
+                coords = geometry.get("coordinates") or []
+                if len(coords) < 2:
+                    continue
+                lon0, lat0 = float(coords[0]), float(coords[1])
+                if not (40.0 <= lat0 <= 56.5 and 45.0 <= lon0 <= 88.5):
+                    continue
+                source = str(props.get("source") or props.get("operator") or props.get("network") or "").strip()
+                # Include only stations explicitly identified as part of the government network.
+                if not source or not any(token in source.casefold() for token in ("kgmt", "kazhydromet", "kaz гидромет")):
+                    continue
+                stations.append({
+                    "name": str(props.get("name") or props.get("station_name") or props.get("id") or "Пост мониторинга"),
+                    "city": str(props.get("city") or "Казахстан"),
+                    "lat": lat0, "lon": lon0,
+                    "source": source or "Источник не указан в реестре",
+                    "station_id": str(props.get("id") or props.get("station_id") or ""),
+                    "exact": True,
+                })
+            if stations:
+                # De-duplicate by station identity and coordinates.
+                unique = {}
+                for station in stations:
+                    key = (station["name"].casefold(), round(station["lat"], 5), round(station["lon"], 5))
+                    unique[key] = station
+                return {"stations": list(unique.values()), "exact": True,
+                        "source": "AirData.kz station registry (Kazhydromet network)"}
+        except Exception:
+            continue
+
+    fallback = [{
+        "name": f"Посты наблюдения · {name}", "city": name,
+        "lat": lat0, "lon": lon0, "source": "Официальная сеть наблюдений; точка в центре населённого пункта",
+        "station_id": "", "exact": False,
+    } for name, lat0, lon0 in MONITORING_SETTLEMENT_FALLBACK]
+    return {"stations": fallback, "exact": False,
+            "source": "Kazhydromet monitoring-settlement list; approximate town-centre markers"}
+
+
+def haversine_km(lat1, lon1, lat2, lon2):
+    radius = 6371.0
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = math.sin(dlat / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dlon / 2) ** 2
+    return radius * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+
+def aqi_color(value):
+    value = numeric(value)
+    if value is None:
+        return "#8A9185"
+    if value <= 50:
+        return "#2E9D58"   # green
+    if value <= 100:
+        return "#E6C229"   # yellow
+    if value <= 150:
+        return "#F28C28"   # orange
+    if value <= 200:
+        return "#D94141"   # red
+    if value <= 300:
+        return "#713E9A"   # purple
+    return "#7E0023"       # maroon
+
+
+def aqi_category_ru(value):
+    value = numeric(value)
+    if value is None:
+        return "Нет данных"
+    if value <= 50:
+        return "Низкий уровень · хороший"
+    if value <= 100:
+        return "Умеренный уровень"
+    if value <= 150:
+        return "Повышенный · чувствительные группы"
+    if value <= 200:
+        return "Высокий уровень"
+    if value <= 300:
+        return "Очень высокий уровень"
+    return "Опасный уровень"
+
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def get_osm_industrial_objects(lat, lon):
@@ -585,6 +767,9 @@ if q:
         if q in name_key or q in display_key or name_key in q:
             factory_matches.append(obj)
 
+station_registry = get_monitoring_station_registry()
+monitoring_stations = station_registry.get("stations", [])
+
 # If the requested enterprise was located, request model data at its mapped
 # coordinates. If not, keep the city-centre grid and label it explicitly.
 assessment_lat, assessment_lon = lat, lon
@@ -613,7 +798,7 @@ st.markdown(f"### {city_name} — {city_data.get('admin1', 'Kazakhstan')}")
 st.markdown(f"<span class='eco-pill'>{t('model_notice')}</span>", unsafe_allow_html=True)
 st.caption(t("official_notice"))
 
-tabs = st.tabs([t("map"), t("air"), t("wind"), t("company"), t("risk"), t("analysis"), t("team")])
+tabs = st.tabs([t("map"), t("pollution_map"), t("air"), t("wind"), t("company"), t("risk"), t("analysis"), t("team")])
 
 # 1. Kazakhstan map and industrial OSM features
 with tabs[0]:
@@ -648,9 +833,34 @@ with tabs[0]:
             icon=folium.Icon(color="darkgreen", icon="industry", prefix="fa"),
         ).add_to(factory_group)
     factory_group.add_to(fmap)
+
+    # Monitoring-post layer: exact post coordinates when the registry is available;
+    # otherwise clearly labelled approximate settlement-centre markers.
+    station_group = folium.FeatureGroup(name="Станции мониторинга / Monitoring network", show=True)
+    for station in monitoring_stations:
+        detail = (
+            f"<b>{station['name']}</b><br>Населённый пункт: {station['city']}<br>"
+            f"Источник: {station['source']}<br>"
+            + ("Координаты поста из реестра." if station.get("exact") else
+               "Приблизительная точка в центре населённого пункта; не точный адрес поста.")
+        )
+        folium.CircleMarker(
+            location=[station["lat"], station["lon"]], radius=5,
+            color="#246B8A", weight=1.5, fill=True,
+            fill_color="#54A6C8", fill_opacity=0.95,
+            tooltip=f"Станция мониторинга · {station['city']}",
+            popup=folium.Popup(detail, max_width=320),
+        ).add_to(station_group)
+    station_group.add_to(fmap)
+
     folium.LayerControl(collapsed=False).add_to(fmap)
     st_folium(fmap, use_container_width=True, height=560, returned_objects=[])
     st.caption("Карта: ©️ OpenStreetMap contributors. " + t("map_regions"))
+    if station_registry.get("exact"):
+        st.caption(f"Слой станций: загружены координаты {len(monitoring_stations)} постов из реестра AirData.kz / Kazhydromet network.")
+    else:
+        st.caption("Слой мониторинга: показаны населённые пункты, где ведётся наблюдение; значки стоят примерно в центре города, а не по точному адресу каждого поста.")
+    st.markdown("[Официальная интерактивная карта Казгидромета](https://www.kazhydromet.kz/en/interactive_cards) · [Реестр станций AirData.kz](https://github.com/qazybekb/AirDatakz-OpenData)")
     if factory_query and not factory_matches:
         st.warning(t("not_found"))
         st.caption("Поиск проверяет OpenStreetMap/Nominatim. Это открытая карта, а не полный официальный реестр предприятий Казахстана.")
@@ -665,8 +875,106 @@ with tabs[0]:
     else:
         st.info(t("no_factory"))
 
-# 2. Air quality
+# 2. Countrywide modelled pollution overview — one additional page only.
 with tabs[1]:
+    st.subheader(t("pollution_map"))
+    st.markdown(
+        "Цветные точки показывают текущую модельную оценку US AQI в выбранных городах. "
+        "Это ориентир по городским координатам, а не измерение на каждом заводе или посту мониторинга."
+    )
+    try:
+        with st.spinner("Загружаем модельные данные по городам Казахстана..."):
+            national_air_points = get_national_air_overview()
+    except Exception as national_exc:
+        national_air_points = []
+        st.warning("Не удалось загрузить общую карту загрязнения: " + str(national_exc)[:220])
+
+    pollution_map = folium.Map(
+        location=[48.0, 67.0], zoom_start=5, tiles="OpenStreetMap", control_scale=True
+    )
+    Fullscreen(position="topright").add_to(pollution_map)
+
+    pollution_layer = folium.FeatureGroup(name="Модельный индекс качества воздуха (US AQI)", show=True)
+    usable_points = []
+    for point in national_air_points:
+        aqi = numeric(point.get("aqi"))
+        if aqi is None:
+            continue
+        usable_points.append(point)
+        colour = aqi_color(aqi)
+        popup_text = (
+            f"<b>{point['name']}</b><br>US AQI: {aqi:.0f} — {aqi_category_ru(aqi)}<br>"
+            f"PM2.5: {numeric(point.get('pm25')) if numeric(point.get('pm25')) is not None else '—'} µg/m³<br>"
+            f"PM10: {numeric(point.get('pm10')) if numeric(point.get('pm10')) is not None else '—'} µg/m³<br>"
+            f"Время модели: {point.get('time') or '—'}<br>"
+            "Источник: Open-Meteo / CAMS, расчётная точка в городе."
+        )
+        folium.CircleMarker(
+            location=[point["lat"], point["lon"]],
+            radius=8 + min(aqi / 45.0, 7),
+            color=colour, weight=2, fill=True, fill_color=colour, fill_opacity=0.82,
+            tooltip=f"{point['name']} · AQI {aqi:.0f}",
+            popup=folium.Popup(popup_text, max_width=330),
+        ).add_to(pollution_layer)
+    pollution_layer.add_to(pollution_map)
+
+    station_layer_pollution = folium.FeatureGroup(name="Станции мониторинга", show=True)
+    for station in monitoring_stations:
+        popup = (
+            f"<b>{station['name']}</b><br>{station['city']}<br>{station['source']}<br>"
+            + ("Координаты поста из реестра." if station.get("exact") else
+               "Приблизительная точка населённого пункта, не адрес поста.")
+        )
+        folium.CircleMarker(
+            location=[station["lat"], station["lon"]], radius=4,
+            color="#246B8A", weight=1, fill=True,
+            fill_color="#54A6C8", fill_opacity=1,
+            tooltip=f"Пост мониторинга · {station['city']}",
+            popup=folium.Popup(popup, max_width=300),
+        ).add_to(station_layer_pollution)
+    station_layer_pollution.add_to(pollution_map)
+    folium.LayerControl(collapsed=False).add_to(pollution_map)
+
+    st_folium(pollution_map, use_container_width=True, height=590, returned_objects=[])
+    st.markdown("#### Легенда качества воздуха · US AQI")
+    legend_items = [
+        ("#2E9D58", "0–50", "Низкий / хороший"),
+        ("#E6C229", "51–100", "Умеренный"),
+        ("#F28C28", "101–150", "Повышенный · чувствительные группы"),
+        ("#D94141", "151–200", "Высокий"),
+        ("#713E9A", "201–300", "Очень высокий"),
+        ("#7E0023", "301+", "Опасный"),
+    ]
+    legend_html = "<div style='display:flex;flex-wrap:wrap;gap:10px 18px;margin:8px 0 14px 0;'>"
+    for colour, band, label in legend_items:
+        legend_html += (
+            f"<div style='display:flex;align-items:center;gap:7px;min-width:180px;'>"
+            f"<span style='display:inline-block;width:13px;height:13px;border-radius:50%;background:{colour};'></span>"
+            f"<span style='font-size:13px;color:#34402C;'><b>{band}</b> — {label}</span></div>"
+        )
+    legend_html += "</div>"
+    st.markdown(legend_html, unsafe_allow_html=True)
+    if usable_points:
+        ranked = sorted(usable_points, key=lambda item: numeric(item.get("aqi")) or -1, reverse=True)
+        st.markdown("#### Города с наибольшим значением среди показанных точек")
+        st.dataframe(pd.DataFrame([
+            {"Город": item["name"], "US AQI": round(float(item["aqi"])),
+             "PM2.5, µg/m³": round(float(item["pm25"]), 2) if numeric(item.get("pm25")) is not None else "—",
+             "Оценка": aqi_category_ru(item["aqi"])}
+            for item in ranked
+        ]), use_container_width=True, hide_index=True)
+    else:
+        st.info("Сейчас нет доступных значений для окраски точек. Карта не подставляет вымышленные показатели.")
+    st.caption(
+        "Важно: сравниваются только представленные города и текущие модельные значения Open-Meteo / CAMS. "
+        "Это не полный рейтинг загрязнения всех населённых пунктов и не официальный протокол измерений."
+    )
+    st.markdown("[Методика категорий US AQI — US EPA](https://www.airnow.gov/aqi/aqi-basics/) · "
+                "[Open-Meteo Air Quality API](https://open-meteo.com/en/docs/air-quality-api)")
+
+
+# 3. Air quality
+with tabs[2]:
     st.subheader(t("air"))
     st.info(t("model_notice"))
     pollutants = [
@@ -713,7 +1021,7 @@ with tabs[1]:
     st.caption("CO — угарный газ (carbon monoxide, µg/m³). CO₂ — углекислый газ (carbon dioxide, ppm); это отдельный часовой модельный показатель.")
 
 # 3. Wind — animated map with moving wind particles and a forecast timeline
-with tabs[2]:
+with tabs[3]:
     st.subheader(t("wind"))
     wind_speed = numeric(current_weather.get("wind_speed_10m"))
     wind_dir = numeric(current_weather.get("wind_direction_10m"))
@@ -745,30 +1053,156 @@ with tabs[2]:
     st.caption(t("wind_map_caption"))
     st.markdown("[Windy — интерактивная карта ветра](https://www.windy.com/) · [Open-Meteo Weather API](https://open-meteo.com/en/docs)")
 
-# 4. Enterprise profile
-with tabs[3]:
+# 5. Enterprise profile — extended only in the existing profile tab.
+with tabs[4]:
     st.subheader(t("company"))
     if factory_matches:
         selected = factory_matches[0]
         st.markdown(f"### {selected['name']}")
-        st.write(f"**{t('factory_type')}:** {selected['type']}")
-        st.write(f"**{t('coordinates')}:** {selected['lat']:.5f}, {selected['lon']:.5f}")
-        st.write(f"**Operator:** {selected['operator']}")
-        if selected["website"]:
-            st.write(f"**Website:** {selected['website']}")
-        st.caption("Source: OpenStreetMap community-contributed map data. This is not an official industrial register.")
-        st.markdown(f"https://www.openstreetmap.org/{selected['osm_type']}/{selected['osm_id']}")
+
+        location_text = selected.get("display_name") or selected.get("operator") or city_name
+        object_type = str(selected.get("type") or "Промышленный объект").replace("_", " ").strip()
+        industry_map = {
+            "chemical": "Химическая промышленность",
+            "metal": "Металлургия / обработка металлов",
+            "steel": "Чёрная металлургия / сталь",
+            "mineral": "Минеральное сырьё / материалы",
+            "food": "Пищевая промышленность",
+            "power": "Энергетика",
+            "oil": "Нефтегазовая промышленность",
+            "mine": "Добывающая промышленность",
+            "quarry": "Карьер / добыча сырья",
+            "works": "Производственный объект",
+            "industrial": "Промышленный объект (категория не уточнена)",
+        }
+        object_type_lower = object_type.casefold()
+        industry_label = next((label for key, label in industry_map.items() if key in object_type_lower), object_type.title())
+
+        detail_cols = st.columns(2)
+        with detail_cols[0]:
+            st.markdown("**Местоположение**")
+            st.write(location_text)
+            st.markdown("**Вид промышленности**")
+            st.write(industry_label)
+        with detail_cols[1]:
+            st.markdown("**Координаты объекта**")
+            st.write(f"{selected['lat']:.5f}, {selected['lon']:.5f}")
+            st.markdown("**Оператор / организация**")
+            st.write(selected.get("operator") or "Не указан в открытых картографических данных")
+        if selected.get("website"):
+            st.markdown(f"**Сайт:** [{selected['website']}]({selected['website']})")
+        if selected.get("osm_type") and selected.get("osm_id"):
+            st.markdown(
+                f"[Открыть запись объекта в OpenStreetMap](https://www.openstreetmap.org/{selected['osm_type']}/{selected['osm_id']})"
+            )
+        st.caption("Источник названия и типа объекта: OpenStreetMap. Карта сообщества не является государственным реестром предприятий.")
+
+        st.markdown("#### Выбросы и качество воздуха рядом с объектом")
+        st.info(
+            "Подтверждённый отчёт о фактических выбросах этого предприятия к приложению не подключён. "
+            "Показатели ниже описывают модельное состояние атмосферного воздуха в координатах объекта, "
+            "а не массу выбросов завода."
+        )
+        profile_pollutants = [
+            ("PM2.5", "pm2_5", "µg/m³"), ("PM10", "pm10", "µg/m³"),
+            ("NO₂", "nitrogen_dioxide", "µg/m³"), ("SO₂", "sulphur_dioxide", "µg/m³"),
+            ("O₃", "ozone", "µg/m³"), ("CO", "carbon_monoxide", "µg/m³"),
+        ]
+        profile_cols = st.columns(3)
+        for i, (label, key, unit) in enumerate(profile_pollutants):
+            value = numeric(current_air.get(key))
+            with profile_cols[i % 3]:
+                st.metric(label, f"{value:.2f} {unit}" if value is not None else "—")
+        st.caption("CO — угарный газ. Он не является CO₂. Значения получены из модели Open-Meteo / CAMS.")
+
+        st.markdown("#### Ближайшие станции мониторинга")
+        nearby_stations = sorted(
+            monitoring_stations,
+            key=lambda station: haversine_km(selected["lat"], selected["lon"], station["lat"], station["lon"])
+        )[:3]
+        if nearby_stations:
+            for station in nearby_stations:
+                distance = haversine_km(selected["lat"], selected["lon"], station["lat"], station["lon"])
+                accuracy_note = "координаты поста из реестра" if station.get("exact") else "ориентировочная точка населённого пункта"
+                st.markdown(
+                    f"- **{station['name']}** — {station['city']}, примерно {distance:.1f} км "
+                    f"({accuracy_note})"
+                )
+            if station_registry.get("exact"):
+                st.caption("Координаты постов получены из реестра AirData.kz; доступность и актуальные показания конкретного поста уточняются в официальной карте Казгидромета.")
+            else:
+                st.caption("Точные координаты отдельных постов не загрузились. Показаны ближайшие населённые пункты, где ведётся мониторинг; расстояние ориентировочное.")
+        else:
+            st.write("Сведения о координатах ближайших постов сейчас недоступны.")
+        st.markdown("[Официальная карта наблюдений Казгидромета](https://www.kazhydromet.kz/en/interactive_cards)")
+
+        st.markdown("#### Изменение концентраций и сравнение периодов")
+        hourly = air_data.get("hourly", {})
+        times = hourly.get("time", [])
+        profile_options = {
+            "PM2.5": ("pm2_5", "µg/m³"),
+            "PM10": ("pm10", "µg/m³"),
+            "NO₂": ("nitrogen_dioxide", "µg/m³"),
+            "SO₂": ("sulphur_dioxide", "µg/m³"),
+            "O₃": ("ozone", "µg/m³"),
+            "US AQI": ("us_aqi", "индекс"),
+            "European AQI": ("european_aqi", "индекс"),
+        }
+        available_options = [label for label, (key, unit) in profile_options.items()
+                             if len(hourly.get(key, [])) == len(times) and len(times) > 0]
+        if available_options:
+            choose_col, period_col = st.columns(2)
+            with choose_col:
+                chosen_pollutant = st.selectbox("Показатель", available_options, key="company_pollutant")
+            with period_col:
+                chosen_period = st.selectbox(
+                    "Период прогноза",
+                    ["Все доступные 48 часов", "Первые 24 часа", "Следующие 24 часа"],
+                    key="company_period",
+                )
+            key, unit = profile_options[chosen_pollutant]
+            values = hourly.get(key, [])
+            chart_frame = pd.DataFrame({"Время": times, "Значение": values})
+            chart_frame["Значение"] = pd.to_numeric(chart_frame["Значение"], errors="coerce")
+            if chosen_period == "Первые 24 часа":
+                chart_frame = chart_frame.iloc[:24]
+            elif chosen_period == "Следующие 24 часа":
+                chart_frame = chart_frame.iloc[24:48]
+            else:
+                chart_frame = chart_frame.iloc[:48]
+            chart_frame = chart_frame.dropna()
+            if not chart_frame.empty:
+                profile_fig = px.line(
+                    chart_frame, x="Время", y="Значение", markers=True,
+                    title=f"{chosen_pollutant} · прогноз · {unit}",
+                )
+                profile_fig.update_traces(line_color=GREEN, marker_color=DARK)
+                profile_fig.update_layout(paper_bgcolor=BG, plot_bgcolor="#fffef8", margin=dict(t=55, b=20))
+                st.plotly_chart(profile_fig, use_container_width=True)
+
+            if key not in ("us_aqi", "european_aqi") and len(values) >= 48:
+                first_period = pd.to_numeric(pd.Series(values[:24]), errors="coerce").dropna()
+                second_period = pd.to_numeric(pd.Series(values[24:48]), errors="coerce").dropna()
+                compare_cols = st.columns(2)
+                compare_cols[0].metric(
+                    "Среднее за первые 24 часа",
+                    f"{first_period.mean():.2f} {unit}" if not first_period.empty else "—",
+                )
+                compare_cols[1].metric(
+                    "Среднее за следующие 24 часа",
+                    f"{second_period.mean():.2f} {unit}" if not second_period.empty else "—",
+                )
+            st.caption("Доступно сравнение двух последовательных 24-часовых периодов прогноза. Это не исторический ряд фактических измерений.")
+        else:
+            st.info("Почасовой ряд для сравнения сейчас не предоставлен API.")
     else:
         st.warning(t("not_found"))
-        st.write("Предприятие может отсутствовать в OpenStreetMap или быть записано под другим названием.")
-        st.write("The requested enterprise may be missing from OpenStreetMap or listed under another name.")
-    st.markdown("#### Environmental measurements")
-    st.info(t("official_notice"))
-    st.write(t("data_missing"))
-    st.markdown("[Казгидромет — официальный сайт](https://www.kazhydromet.kz/)")
+        st.write("Предприятие может отсутствовать в OpenStreetMap или быть записано под другим названием. Чтобы не приписывать экологические данные неверному объекту, карточка не подставляет случайное предприятие.")
+        st.write("Фактические выбросы и ближайшие посты можно показывать только при подтверждённой связи с конкретным предприятием и станцией.")
+        st.markdown("[Официальная карта наблюдений Казгидромета](https://www.kazhydromet.kz/en/interactive_cards)")
 
-# 5. Environmental risk screening — detailed, but clearly model-based
-with tabs[4]:
+# 6. Environmental risk screening — retained as before
+with tabs[5]:
     st.subheader(t("risk"))
     st.info(t("risk_detail_note"))
     point_label = t("risk_factory_point") if assessment_is_factory else t("risk_city_point")
@@ -876,150 +1310,4 @@ with tabs[4]:
     st.caption(t("risk_aqi_legend"))
     st.write("Индекс AQI описывает краткосрочное качество воздуха по модели. Он не является проверкой соблюдения казахстанских нормативов и не доказывает, что конкретный завод вызвал загрязнение.")
     st.write("Для официального вывода нужны данные аккредитованных постов наблюдения, применимые нормативы Казахстана и подтверждённая методика оценки предприятия.")
-    st.markdown("[Методика US AQI — US EPA](https://www.airnow.gov/aqi/aqi-basics/) · [European AQI — EEA](https://airindex.eea.europa.eu/AQI/)")
-
-# 6. Analysis — readable charts and tables instead of a raw JSON dump
-with tabs[5]:
-    st.subheader(t("analysis"))
-    st.caption(t("model_notice"))
-    aqi_now = numeric(current_air.get("us_aqi"))
-    if aqi_now is None:
-        aqi_now = numeric(current_air.get("european_aqi"))
-    pm25_now = numeric(current_air.get("pm2_5"))
-    pm10_now = numeric(current_air.get("pm10"))
-    wind_now = numeric(current_weather.get("wind_speed_10m"))
-    m1, m2, m3, m4 = st.columns(4)
-    m1.metric("US AQI" if numeric(current_air.get("us_aqi")) is not None else "European AQI",
-              f"{aqi_now:.0f}" if aqi_now is not None else "—")
-    m2.metric("PM2.5", f"{pm25_now:.2f} µg/m³" if pm25_now is not None else "—")
-    m3.metric("PM10", f"{pm10_now:.2f} µg/m³" if pm10_now is not None else "—")
-    m4.metric(t("wind_speed"), f"{wind_now:.1f} km/h" if wind_now is not None else "—")
-
-    air_hourly = air_data.get("hourly", {})
-    air_times = air_hourly.get("time", [])
-    aqi_series = air_hourly.get("us_aqi", [])
-    if not aqi_series:
-        aqi_series = air_hourly.get("european_aqi", [])
-        aqi_title = "European AQI — hourly model forecast"
-    else:
-        aqi_title = "US AQI — hourly model forecast"
-    if air_times and aqi_series and len(air_times) == len(aqi_series):
-        aqi_df = pd.DataFrame({"time": air_times[:48], "AQI": aqi_series[:48]})
-        aqi_fig = px.line(aqi_df, x="time", y="AQI", markers=True, title=aqi_title)
-        aqi_fig.update_layout(paper_bgcolor=BG, plot_bgcolor="#fffef8")
-        st.plotly_chart(aqi_fig, use_container_width=True)
-    else:
-        st.info("Почасовой ряд AQI сейчас не предоставлен API.")
-
-    pollutant_rows = []
-    for label, key, unit in [
-        ("PM2.5", "pm2_5", "µg/m³"), ("PM10", "pm10", "µg/m³"),
-        ("NO₂", "nitrogen_dioxide", "µg/m³"), ("SO₂", "sulphur_dioxide", "µg/m³"),
-        ("O₃", "ozone", "µg/m³"), ("CO", "carbon_monoxide", "µg/m³"),
-        ("CO₂", "carbon_dioxide", "ppm"),
-    ]:
-        val = numeric(current_air.get(key))
-        if key == "carbon_dioxide":
-            val = current_hourly_value(air_data, key)
-        pollutant_rows.append({"Показатель": label, "Значение": f"{val:.2f}" if val is not None else "—", "Единица": unit})
-    st.markdown("#### Сводка модельных концентраций")
-    st.dataframe(pd.DataFrame(pollutant_rows), use_container_width=True, hide_index=True)
-
-    weather_hourly = weather_data.get("hourly", {})
-    wind_times = weather_hourly.get("time", [])
-    wind_speeds = weather_hourly.get("wind_speed_10m", [])
-    if wind_times and wind_speeds and len(wind_times) == len(wind_speeds):
-        wind_df = pd.DataFrame({"time": wind_times[:48], "Wind speed (km/h)": wind_speeds[:48]})
-        wind_fig = px.line(wind_df, x="time", y="Wind speed (km/h)", markers=True,
-                           title="Wind speed — hourly model forecast")
-        wind_fig.update_layout(paper_bgcolor=BG, plot_bgcolor="#fffef8")
-        st.plotly_chart(wind_fig, use_container_width=True)
-
-    st.caption("Временные ряды ниже — прогнозные модельные данные, а не исторические измерения с постов наблюдения.")
-    st.write(f"Точка экологической оценки: {assessment_name} ({assessment_lat:.5f}, {assessment_lon:.5f}).")
-    st.markdown("[Open-Meteo Air Quality API](https://open-meteo.com/en/docs/air-quality-api) · [Open-Meteo Weather API](https://open-meteo.com/en/docs)")
-
-
-# 7. Team information — a separate final slide/tab.
-with tabs[6]:
-    st.subheader("Команда «Өмір өзен»" if st.session_state.lang == "ru" else
-                 "«Өмір өзен» командасы" if st.session_state.lang == "kk" else
-                 "The «Өмір өзен» team")
-    if st.session_state.lang == "ru":
-        intro = (
-            "Мы — команда «Өмір өзен», участники учебного проекта ECO AI Kazakhstan. "
-            "Мы работаем над платформой, которая помогает знакомиться с экологической "
-            "информацией о городах Казахстана: качеством воздуха, погодными условиями, "
-            "ветром и расположением промышленных объектов. Наша цель — сделать "
-            "экологические данные понятнее и доступнее."
-        )
-        fact_title = "Как появилось название команды"
-        fact = (
-            "Мы придумывали название команды во время подготовки к конкурсу "
-            "«451 градус по Фаренгейту». В тот день Айлара была в кофте Qazaq Republic "
-            "с надписью «Өмір өзен». Эта фраза нам запомнилась, и мы решили, что "
-            "именно так будет называться наша команда. Так случайная деталь того дня "
-            "стала частью нашей общей истории."
-        )
-        members_title = "Участницы команды"
-        contact_title = "Контакт для связи"
-        contact_note = "Демонстрационный адрес для макета. Он не существует как почтовый ящик и не принимает письма."
-    elif st.session_state.lang == "kk":
-        intro = (
-            "Біз — «Өмір өзен» командасы, ECO AI Kazakhstan оқу жобасының қатысушыларымыз. "
-            "Біз Қазақстан қалаларының экологиялық ақпаратымен — ауа сапасы, ауа райы, "
-            "жел және өнеркәсіп нысандарының орналасуымен танысуға көмектесетін "
-            "платформа әзірлеп жатырмыз. Мақсатымыз — экологиялық деректерді түсінікті "
-            "әрі қолжетімді ету."
-        )
-        fact_title = "Команда атауының тарихы"
-        fact = (
-            "Біз «451 градус по Фаренгейту» байқауына дайындалып жүргенде командаға "
-            "атау іздедік. Сол күні Айлараның үстінде Qazaq Republic маркасының "
-            "«Өмір өзен» деген жазуы бар жейдесі болды. Бұл сөз тіркесі бәрімізге ұнап, "
-            "командамызды осылай атауды шештік."
-        )
-        members_title = "Команда мүшелері"
-        contact_title = "Байланыс"
-        contact_note = "Бұл — макетке арналған демонстрациялық мекенжай. Ол нақты пошта жәшігі емес және хат қабылдамайды."
-    else:
-        intro = (
-            "We are the «Өмір өзен» team, working on the educational project ECO AI Kazakhstan. "
-            "We are building a platform that helps people explore environmental information "
-            "about Kazakhstan's cities, including air quality, weather, wind and mapped "
-            "industrial facilities. Our goal is to make environmental information easier to understand and access."
-        )
-        fact_title = "How our team got its name"
-        fact = (
-            "We were choosing a team name while preparing for the «451 градус по Фаренгейту» "
-            "competition. On that day, Ailara wore a Qazaq Republic sweatshirt with the words "
-            "«Өмір өзен» on it. The phrase caught our attention, and we decided to use it as "
-            "our team name. A small detail from that day became part of our team's story."
-        )
-        members_title = "Team members"
-        contact_title = "Contact"
-        contact_note = "This is a demonstration address for the mock-up. It is not a real mailbox and cannot receive messages."
-
-    st.markdown(f"<div class='eco-card' style='padding:24px 26px;'><p style='font-size:1.04rem;line-height:1.75;margin:0'>{intro}</p></div>", unsafe_allow_html=True)
-    st.markdown(f"### {fact_title}")
-    st.info(fact)
-    st.markdown(f"### {members_title}")
-    member_cols = st.columns(3)
-    members = ["Базарбай Айлара", "Жексенберды Каусар", "Болат Жулдыз"]
-    for col, member in zip(member_cols, members):
-        with col:
-            st.markdown(f"<div class='eco-card' style='text-align:center;min-height:92px;display:flex;align-items:center;justify-content:center;font-weight:600'>{member}</div>", unsafe_allow_html=True)
-    st.markdown(f"### {contact_title}")
-    st.code("omyr.ozen.demo@example.com", language=None)
-    st.caption(contact_note)
-
-st.markdown("---")
-st.markdown(f"<div class='eco-card'>{t('disclaimer')}</div>", unsafe_allow_html=True)
-st.markdown(
-    "**Data attribution:** Open-Meteo / Copernicus Atmosphere Monitoring Service (CAMS); "
-    "OpenStreetMap contributors. "
-    "[Open-Meteo Air Quality](https://open-meteo.com/en/docs/air-quality-api) · "
-    "[Open-Meteo Weather](https://open-meteo.com/en/docs) · "
-    "[OpenStreetMap](https://www.openstreetmap.org/copyright) · "
-    "[Kazhydromet](https://www.kazhydromet.kz/)"
-)
+    st.markdown("[Методика US AQI — US EPA](https://www.airnow.gov/aqi/aqi-basics/) · [European AQI — E
