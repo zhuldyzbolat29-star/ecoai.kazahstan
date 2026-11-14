@@ -1330,3 +1330,64 @@ with tabs[5]:
         )
         risk_fig.update_traces(marker_color=GREEN)
         st.plotly_chart(risk_fig, use_container_width=True)
+# 7. DATA ANALYSIS
+with tabs[6]:
+        st.subheader("Анализ данных")
+        st.write(
+            "В этом разделе представлены данные о загрязнении воздуха "
+            "и их краткий анализ."
+        )
+
+        if pollutant_values:
+            analysis_rows = [
+                {
+                    "Показатель": name,
+                    "Значение": value,
+                    "Единица": unit
+                }
+                for name, value, unit, description in pollutant_values
+                if value is not None
+            ]
+
+            if analysis_rows:
+                analysis_df = pd.DataFrame(analysis_rows)
+                st.dataframe(analysis_df, use_container_width=True)
+
+                st.info(
+                    "Данные Open-Meteo/CAMS являются модельными "
+                    "оценками, а не прямыми измерениями у завода."
+                )
+            else:
+                st.warning("Нет доступных данных для анализа.")
+        else:
+            st.warning("Данные о загрязнении пока недоступны.")
+
+    # 8. ABOUT THE TEAM
+with tabs[7]:
+        st.subheader("О команде")
+        st.write(
+            "ECO AI Kazakhstan — учебный экологический проект, "
+            "созданный для изучения качества воздуха и экологических "
+            "рисков в городах Казахстана."
+        )
+
+        st.markdown("### Наша миссия")
+        st.write(
+            "Сделать экологическую информацию более доступной "
+            "и понятной для жителей Казахстана."
+        )
+
+        st.markdown("### Что делает проект")
+        st.write(
+            "- Показывает данные о качестве воздуха.\n"
+            "- Помогает изучать экологические риски.\n"
+            "- Показывает информацию о промышленных объектах.\n"
+            "- Поддерживает русский, казахский и английский языки.\n"
+            "- Предусматривает голосовое взаимодействие."
+        )
+
+        st.markdown("### О проекте")
+        st.write(
+            "Проект разработан в образовательных целях. "
+            "Он не заменяет официальные экологические измерения."
+        )
