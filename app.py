@@ -1314,17 +1314,15 @@ with tabs[5]:
         for name, value, unit, _ in pollutant_values
         if value is not None and unit == "µg/m³"
     ]
-    if chart_rows:
-    chart_df = pd.DataFrame(chart_rows).sort_values(
-        "Concentration", ascending=True
-    )
+   if chart_rows:
+    chart_df = pd.DataFrame(chart_rows)
 
     risk_fig = px.bar(
         chart_df,
         x="Concentration",
         y="Pollutant",
         orientation="h",
-        title="Концентрации загрязнителей",
+        title="Концентрации загрязнителей"
     )
 
     st.plotly_chart(risk_fig, use_container_width=True)
