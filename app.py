@@ -1314,15 +1314,19 @@ with tabs[5]:
         for name, value, unit, _ in pollutant_values
         if value is not None and unit == "µg/m³"
     ]
-   if chart_rows:
-    chart_df = pd.DataFrame(chart_rows)
+   # Only compare pollutants with the same unit (µg/m³); CO₂ in ppm is excluded.
+    
 
-    risk_fig = px.bar(
-        chart_df,
-        x="Concentration",
-        y="Pollutant",
-        orientation="h",
-        title="Концентрации загрязнителей"
-    )
-
-    st.plotly_chart(risk_fig, use_container_width=True)
+        if chart_rows:
+        chart_df = pd.DataFrame(chart_rows).sort_values(
+            "Concentration", ascending=True
+        )
+        risk_fig = px.bar(
+            chart_df,
+            x="Concentration",
+            y="Pollutant",
+            orientation="h",
+            title="Концентрации загрязнителей",
+        )
+        risk_fig.update_traces(marker_color=GREEN)
+        st.plotly_chart(risk_fig, use_container_width=True)
