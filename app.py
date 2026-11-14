@@ -1310,4 +1310,7 @@ with tabs[5]:
     st.caption(t("risk_aqi_legend"))
     st.write("Индекс AQI описывает краткосрочное качество воздуха по модели. Он не является проверкой соблюдения казахстанских нормативов и не доказывает, что конкретный завод вызвал загрязнение.")
     st.write("Для официального вывода нужны данные аккредитованных постов наблюдения, применимые нормативы Казахстана и подтверждённая методика оценки предприятия.")
-    st.markdown("[Методика US AQI — US EPA](https://www.airnow.gov/aqi/aqi-basics/) · [European AQI — E
+    st.markdown(
+    "[Методика US AQI — US EPA](https://www.airnow.gov/aqi/aqi-basics/) · "
+    "[European AQI — EEA](https://www.eea.europa.eu/)"
+)
