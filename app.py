@@ -80,7 +80,7 @@ TEXT = {
         "search": "Найти предприятие", "map": "Интерактивная карта",
         "air": "Загрязнение воздуха", "wind": "Ветер",
         "company": "Карточка предприятия", "risk": "Экологические риски",
-        "analysis": "Анализ данных",
+        "analysis": "Анализ данных", "team": "О команде",
         "no_search": "Введите город и нажмите кнопку поиска.",
         "not_found": "Точное совпадение предприятия в открытых картографических данных не найдено.",
         "data_missing": "Данные недоступны для этой точки. Мы не подставляем вымышленные значения.",
@@ -123,7 +123,7 @@ TEXT = {
         "factory": "Кәсіпорын / зауыт атауы", "search": "Кәсіпорынды іздеу",
         "map": "Интерактивті карта", "air": "Ауа ластануы", "wind": "Жел",
         "company": "Кәсіпорын картасы", "risk": "Экологиялық тәуекелдер",
-        "analysis": "Деректерді талдау",
+        "analysis": "Деректерді талдау", "team": "Команда туралы",
         "no_search": "Қаланы енгізіп, іздеу түймесін басыңыз.",
         "not_found": "Ашық карта деректерінен кәсіпорынның дәл сәйкестігі табылмады.",
         "data_missing": "Бұл нүкте үшін деректер қолжетімсіз. Жалған мәндер қолданылмайды.",
@@ -165,7 +165,7 @@ TEXT = {
         "continue": "Continue", "city": "Kazakhstan city", "factory": "Enterprise / factory name",
         "search": "Find enterprise", "map": "Interactive map", "air": "Air pollution",
         "wind": "Wind", "company": "Enterprise profile", "risk": "Environmental risks",
-        "analysis": "Data analysis", "no_search": "Enter a city and press Search.",
+        "analysis": "Data analysis", "team": "About the team", "no_search": "Enter a city and press Search.",
         "not_found": "No exact enterprise match was found in open map data.",
         "data_missing": "Data are unavailable for this point. No invented values are displayed.",
         "model_notice": "Open-Meteo/CAMS model data, not a direct measurement at the factory.",
@@ -575,7 +575,14 @@ if q:
     for obj in osm_data:
         name_key = re.sub(r"[^a-zа-яәіңғүұқөһ0-9]", "", obj.get("name", "").casefold())
         display_key = re.sub(r"[^a-zа-яәіңғүұқөһ0-9]", "", obj.get("display_name", "").casefold())
-        if obj.get("direct_search_result") or q in name_key or q in display_key or name_key in q:
+        # Do not treat a nearby office, government building, or generic place
+        # returned by geocoding as an industrial enterprise.
+        if obj.get("direct_search_result"):
+            obj_type = f"{obj.get('type', '')}".casefold()
+            industrial_terms = ("industrial", "works", "manufactur", "factory", "plant", "power", "mine", "quarry")
+            if not any(term in obj_type for term in industrial_terms):
+                continue
+        if q in name_key or q in display_key or name_key in q:
             factory_matches.append(obj)
 
 # If the requested enterprise was located, request model data at its mapped
@@ -606,7 +613,7 @@ st.markdown(f"### {city_name} — {city_data.get('admin1', 'Kazakhstan')}")
 st.markdown(f"<span class='eco-pill'>{t('model_notice')}</span>", unsafe_allow_html=True)
 st.caption(t("official_notice"))
 
-tabs = st.tabs([t("map"), t("air"), t("wind"), t("company"), t("risk"), t("analysis")])
+tabs = st.tabs([t("map"), t("air"), t("wind"), t("company"), t("risk"), t("analysis"), t("team")])
 
 # 1. Kazakhstan map and industrial OSM features
 with tabs[0]:
@@ -785,40 +792,85 @@ with tabs[4]:
             st.error(risk_text)
 
     st.markdown("#### " + t("risk_pollutants_title"))
+    st.markdown(
+        """
+        <div style="background:#eef4e7;border:1px solid #d9e7ca;border-radius:14px;
+                    padding:14px 16px;margin:8px 0 18px 0;color:#405536;">
+          <b>Что означает «модельные данные»?</b><br>
+          Это расчёт компьютером по атмосферной модели и метеорологическим данным.
+          Это <b>не показания датчика</b>, не лабораторный анализ и не измерение выбросов завода.
+          Поэтому ниже убран технический статус у каждой строки: источник и ограничение
+          указаны один раз здесь.
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
     risk_pollutants = [
-        ("PM2.5", "pm2_5", "µg/m³"),
-        ("PM10", "pm10", "µg/m³"),
-        ("NO₂", "nitrogen_dioxide", "µg/m³"),
-        ("SO₂", "sulphur_dioxide", "µg/m³"),
-        ("O₃", "ozone", "µg/m³"),
-        ("CO — угарный газ", "carbon_monoxide", "µg/m³"),
-        ("CO₂ — углекислый газ", "carbon_dioxide", "ppm"),
+        ("PM2.5", "pm2_5", "µg/m³", "Мелкие частицы"),
+        ("PM10", "pm10", "µg/m³", "Взвешенные частицы"),
+        ("NO₂", "nitrogen_dioxide", "µg/m³", "Диоксид азота"),
+        ("SO₂", "sulphur_dioxide", "µg/m³", "Диоксид серы"),
+        ("O₃", "ozone", "µg/m³", "Озон"),
+        ("CO", "carbon_monoxide", "µg/m³", "Угарный газ"),
+        ("CO₂", "carbon_dioxide", "ppm", "Углекислый газ"),
     ]
-    rows = []
-    for pollutant_name, key, unit in risk_pollutants:
+    pollutant_values = []
+    for pollutant_name, key, unit, description in risk_pollutants:
         value = numeric(current_air.get(key))
         if key == "carbon_dioxide":
             value = current_hourly_value(air_data, key)
-        rows.append({
-            t("pollutant"): pollutant_name,
-            t("value"): f"{value:.2f}" if value is not None else "—",
-            t("unit"): unit,
-            "Статус": "Получено из модели" if value is not None else "Нет данных",
-        })
-    st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+        pollutant_values.append((pollutant_name, value, unit, description))
 
-    # Concentrations in µg/m³ share a common unit and can be compared on one chart.
-    chart_rows = []
-    for pollutant_name, key, unit in risk_pollutants:
-        if unit != "µg/m³":
-            continue
-        value = numeric(current_air.get(key))
-        if value is not None:
-            chart_rows.append({"Pollutant": pollutant_name, "Concentration": value})
+    available_values = [item for item in pollutant_values if item[1] is not None]
+    if not available_values:
+        st.info(t("data_missing"))
+    else:
+        # Display as compact cards, without a repetitive technical status column.
+        for row_start in range(0, len(available_values), 3):
+            cols = st.columns(3)
+            for col, item in zip(cols, available_values[row_start:row_start + 3]):
+                pollutant_name, value, unit, description = item
+                with col:
+                    st.markdown(
+                        f"""
+                        <div style="background:#fffef8;border:1px solid #e1e8d8;
+                                    border-radius:16px;padding:18px 18px 16px 18px;
+                                    min-height:132px;margin-bottom:12px;
+                                    box-shadow:0 2px 8px rgba(60,80,40,.05);">
+                          <div style="font-size:13px;color:#718064;font-weight:600;letter-spacing:.3px;">
+                            {pollutant_name}
+                          </div>
+                          <div style="font-size:29px;font-weight:700;color:#426b31;margin:8px 0 3px 0;">
+                            {value:.2f} <span style="font-size:14px;font-weight:500;color:#718064;">{unit}</span>
+                          </div>
+                          <div style="font-size:12px;color:#7b806f;">{description}</div>
+                          <div style="font-size:11px;color:#8b927f;margin-top:9px;">Расчётная оценка</div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+
+    # Only compare pollutants with the same unit (µg/m³); CO₂ in ppm is excluded.
+    chart_rows = [
+        {"Pollutant": name, "Concentration": value}
+        for name, value, unit, _ in pollutant_values
+        if value is not None and unit == "µg/m³"
+    ]
     if chart_rows:
-        chart_df = pd.DataFrame(chart_rows).sort_values("Concentration", ascending=False)
-        risk_fig = px.bar(chart_df, x="Pollutant", y="Concentration", title="Modelled concentrations (µg/m³)")
-        risk_fig.update_layout(paper_bgcolor=BG, plot_bgcolor="#fffef8")
+        chart_df = pd.DataFrame(chart_rows).sort_values("Concentration", ascending=True)
+        risk_fig = px.bar(
+            chart_df, x="Concentration", y="Pollutant", orientation="h",
+            title="Концентрации загрязнителей · µg/m³",
+            text_auto=".1f",
+        )
+        risk_fig.update_traces(marker_color=GREEN, textposition="outside", cliponaxis=False)
+        risk_fig.update_layout(
+            paper_bgcolor=BG, plot_bgcolor="#fffef8",
+            font=dict(family="Roboto, Arial", color="#34402C"),
+            margin=dict(l=10, r=35, t=55, b=15),
+            xaxis_title="Концентрация, µg/m³", yaxis_title="",
+            showlegend=False,
+        )
         st.plotly_chart(risk_fig, use_container_width=True)
 
     st.caption(t("risk_aqi_legend"))
@@ -886,6 +938,80 @@ with tabs[5]:
     st.caption("Временные ряды ниже — прогнозные модельные данные, а не исторические измерения с постов наблюдения.")
     st.write(f"Точка экологической оценки: {assessment_name} ({assessment_lat:.5f}, {assessment_lon:.5f}).")
     st.markdown("[Open-Meteo Air Quality API](https://open-meteo.com/en/docs/air-quality-api) · [Open-Meteo Weather API](https://open-meteo.com/en/docs)")
+
+
+# 7. Team information — a separate final slide/tab.
+with tabs[6]:
+    st.subheader("Команда «Өмір өзен»" if st.session_state.lang == "ru" else
+                 "«Өмір өзен» командасы" if st.session_state.lang == "kk" else
+                 "The «Өмір өзен» team")
+    if st.session_state.lang == "ru":
+        intro = (
+            "Мы — команда «Өмір өзен», участники учебного проекта ECO AI Kazakhstan. "
+            "Мы работаем над платформой, которая помогает знакомиться с экологической "
+            "информацией о городах Казахстана: качеством воздуха, погодными условиями, "
+            "ветром и расположением промышленных объектов. Наша цель — сделать "
+            "экологические данные понятнее и доступнее."
+        )
+        fact_title = "Как появилось название команды"
+        fact = (
+            "Мы придумывали название команды во время подготовки к конкурсу "
+            "«451 градус по Фаренгейту». В тот день Айлара была в кофте Qazaq Republic "
+            "с надписью «Өмір өзен». Эта фраза нам запомнилась, и мы решили, что "
+            "именно так будет называться наша команда. Так случайная деталь того дня "
+            "стала частью нашей общей истории."
+        )
+        members_title = "Участницы команды"
+        contact_title = "Контакт для связи"
+        contact_note = "Демонстрационный адрес для макета. Он не существует как почтовый ящик и не принимает письма."
+    elif st.session_state.lang == "kk":
+        intro = (
+            "Біз — «Өмір өзен» командасы, ECO AI Kazakhstan оқу жобасының қатысушыларымыз. "
+            "Біз Қазақстан қалаларының экологиялық ақпаратымен — ауа сапасы, ауа райы, "
+            "жел және өнеркәсіп нысандарының орналасуымен танысуға көмектесетін "
+            "платформа әзірлеп жатырмыз. Мақсатымыз — экологиялық деректерді түсінікті "
+            "әрі қолжетімді ету."
+        )
+        fact_title = "Команда атауының тарихы"
+        fact = (
+            "Біз «451 градус по Фаренгейту» байқауына дайындалып жүргенде командаға "
+            "атау іздедік. Сол күні Айлараның үстінде Qazaq Republic маркасының "
+            "«Өмір өзен» деген жазуы бар жейдесі болды. Бұл сөз тіркесі бәрімізге ұнап, "
+            "командамызды осылай атауды шештік."
+        )
+        members_title = "Команда мүшелері"
+        contact_title = "Байланыс"
+        contact_note = "Бұл — макетке арналған демонстрациялық мекенжай. Ол нақты пошта жәшігі емес және хат қабылдамайды."
+    else:
+        intro = (
+            "We are the «Өмір өзен» team, working on the educational project ECO AI Kazakhstan. "
+            "We are building a platform that helps people explore environmental information "
+            "about Kazakhstan's cities, including air quality, weather, wind and mapped "
+            "industrial facilities. Our goal is to make environmental information easier to understand and access."
+        )
+        fact_title = "How our team got its name"
+        fact = (
+            "We were choosing a team name while preparing for the «451 градус по Фаренгейту» "
+            "competition. On that day, Ailara wore a Qazaq Republic sweatshirt with the words "
+            "«Өмір өзен» on it. The phrase caught our attention, and we decided to use it as "
+            "our team name. A small detail from that day became part of our team's story."
+        )
+        members_title = "Team members"
+        contact_title = "Contact"
+        contact_note = "This is a demonstration address for the mock-up. It is not a real mailbox and cannot receive messages."
+
+    st.markdown(f"<div class='eco-card' style='padding:24px 26px;'><p style='font-size:1.04rem;line-height:1.75;margin:0'>{intro}</p></div>", unsafe_allow_html=True)
+    st.markdown(f"### {fact_title}")
+    st.info(fact)
+    st.markdown(f"### {members_title}")
+    member_cols = st.columns(3)
+    members = ["Базарбай Айлара", "Жексенберды Каусар", "Болат Жулдыз"]
+    for col, member in zip(member_cols, members):
+        with col:
+            st.markdown(f"<div class='eco-card' style='text-align:center;min-height:92px;display:flex;align-items:center;justify-content:center;font-weight:600'>{member}</div>", unsafe_allow_html=True)
+    st.markdown(f"### {contact_title}")
+    st.code("omyr.ozen.demo@example.com", language=None)
+    st.caption(contact_note)
 
 st.markdown("---")
 st.markdown(f"<div class='eco-card'>{t('disclaimer')}</div>", unsafe_allow_html=True)
