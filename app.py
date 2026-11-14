@@ -1318,4 +1318,4 @@ with tabs[5]:
         chart_df = pd.DataFrame(chart_rows).sort_values("Concentration", ascending=True)
         risk_fig = px.bar(
             chart_df, x="Concentration", y="Pollutant", orientation="h",
-            title="Концентрации загрязнителей ·
+            title="Концентрации загрязнителей" ,
