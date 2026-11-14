@@ -283,17 +283,21 @@ def t(key):
 def geocode_city(city):
     url = "https://geocoding-api.open-meteo.com/v1/search"
     params = {"name": city, "count": 10, "language": "en", "format": "json", "countryCode": "KZ"}
-    response = requests.get(url, params=params, headers=HEADERS, timeout=20)
-    response.raise_for_status()
-    results = response.json().get("results", [])
-    results = [r for r in results if r.get("country_code", "").lower() == "kz" or
-               r.get("country", "").lower() == "kazakhstan"]
+    results = []
+    try:
+        response = requests.get(url, params=params, headers=HEADERS, timeout=(4, 8))
+        response.raise_for_status()
+        results = response.json().get("results", [])
+        results = [r for r in results if r.get("country_code", "").lower() == "kz" or
+                   r.get("country", "").lower() == "kazakhstan"]
+    except requests.RequestException:
+        # Geocoding fallback keeps the enterprise search usable if Open-Meteo is slow.
+        results = []
     if not results:
-        # Fallback to Nominatim when Open-Meteo geocoding has no Kazakhstan match.
         fallback = requests.get(
             "https://nominatim.openstreetmap.org/search",
             params={"q": f"{city}, Kazakhstan", "format": "jsonv2", "limit": 5, "countrycodes": "kz"},
-            headers=HEADERS, timeout=20,
+            headers=HEADERS, timeout=(4, 10),
         )
         fallback.raise_for_status()
         places = fallback.json()
@@ -320,7 +324,7 @@ def search_factory_nominatim(factory, city):
             "format": "jsonv2", "addressdetails": 1, "limit": 10,
             "countrycodes": "kz", "accept-language": "ru,en",
         },
-        headers=HEADERS, timeout=25,
+        headers=HEADERS, timeout=(4, 10),
     )
     response.raise_for_status()
     results = []
@@ -349,7 +353,7 @@ def get_air_quality(lat, lon):
         "hourly": "pm10,pm2_5,carbon_dioxide,nitrogen_dioxide,sulphur_dioxide,ozone,us_aqi,european_aqi",
         "forecast_days": 2, "timezone": "auto",
     }
-    response = requests.get(url, params=params, headers=HEADERS, timeout=25)
+    response = requests.get(url, params=params, headers=HEADERS, timeout=(4, 10))
     response.raise_for_status()
     return response.json()
 
@@ -362,7 +366,7 @@ def get_weather(lat, lon):
         "hourly": "wind_speed_10m,wind_direction_10m",
         "forecast_days": 2, "timezone": "auto",
     }
-    response = requests.get(url, params=params, headers=HEADERS, timeout=25)
+    response = requests.get(url, params=params, headers=HEADERS, timeout=(4, 10))
     response.raise_for_status()
     return response.json()
 
@@ -521,7 +525,7 @@ def get_osm_industrial_objects(lat, lon):
         "https://overpass-api.de/api/interpreter",
         data=query,
         headers=HEADERS,
-        timeout=40,
+        timeout=(4, 12),
     )
     response.raise_for_status()
     elements = response.json().get("elements", [])
@@ -616,6 +620,7 @@ for key, default in {
     "stage": "intro", "lang": "ru",
     "city_result": None, "air": None, "weather": None,
     "osm_objects": [], "factory_query": "", "city_query": "", "osm_error": None,
+    "api_errors": [],
 }.items():
     if key not in st.session_state:
         st.session_state[key] = default
@@ -698,12 +703,12 @@ if submitted:
         st.error(t("no_search"))
     else:
         try:
-            with st.spinner("Получаем географические и экологические данные..."):
+            with st.spinner("Сначала ищем город и предприятие..."):
                 city_data = geocode_city(city_input.strip())
                 lat, lon = float(city_data["latitude"]), float(city_data["longitude"])
-                air_data = get_air_quality(lat, lon)
-                weather_data = get_weather(lat, lon)
                 osm_error = None
+                api_errors = []
+                # Enterprise discovery is independent from weather/air APIs.
                 try:
                     osm_data = get_osm_industrial_objects(lat, lon)
                 except Exception as map_exc:
@@ -715,7 +720,6 @@ if submitted:
                         named_results = search_factory_nominatim(factory_input.strip(), city_input.strip())
                     except Exception as search_exc:
                         osm_error = (osm_error + " | " if osm_error else "") + str(search_exc)
-                # Put direct enterprise matches first and remove duplicate map records.
                 combined = named_results + osm_data
                 seen = set()
                 osm_data = []
@@ -724,6 +728,18 @@ if submitted:
                     if key not in seen:
                         seen.add(key)
                         osm_data.append(obj)
+
+            # Fetch environmental data separately. A timeout must not cancel the search.
+            air_data = {"current": {}, "hourly": {}}
+            weather_data = {"current": {}, "hourly": {}}
+            try:
+                air_data = get_air_quality(lat, lon)
+            except Exception as air_exc:
+                api_errors.append("Качество воздуха временно недоступно: " + str(air_exc)[:180])
+            try:
+                weather_data = get_weather(lat, lon)
+            except Exception as weather_exc:
+                api_errors.append("Погода и ветер временно недоступны: " + str(weather_exc)[:180])
             st.session_state.city_query = city_input.strip()
             st.session_state.factory_query = factory_input.strip()
             st.session_state.city_result = city_data
@@ -731,6 +747,7 @@ if submitted:
             st.session_state.weather = weather_data
             st.session_state.osm_objects = osm_data
             st.session_state.osm_error = osm_error
+            st.session_state.api_errors = api_errors
             st.success(f"{city_data['name']}, {city_data.get('admin1', 'Kazakhstan')} — {lat:.4f}, {lon:.4f}")
         except Exception as exc:
             st.error(f"{t('search_error')} {exc}")
@@ -741,11 +758,18 @@ weather_data = st.session_state.weather
 osm_data = st.session_state.osm_objects
 factory_query = st.session_state.factory_query.strip()
 
-if not city_data or not air_data or not weather_data:
+if not city_data:
     st.info(t("no_search"))
     st.markdown(f"<div class='eco-card'>{t('disclaimer')}</div>", unsafe_allow_html=True)
     st.stop()
 
+air_data = air_data or {"current": {}, "hourly": {}}
+weather_data = weather_data or {"current": {}, "hourly": {}}
+current_air = air_data.get("current", {})
+current_weather = weather_data.get("current", {})
+if st.session_state.get("api_errors"):
+    for api_message in st.session_state.api_errors:
+        st.warning(api_message + " Поиск предприятия при этом продолжает работать.")
 lat, lon = float(city_data["latitude"]), float(city_data["longitude"])
 city_name = city_data["name"]
 
@@ -783,12 +807,12 @@ if factory_matches:
     assessment_is_factory = True
     try:
         air_data = get_air_quality(assessment_lat, assessment_lon)
+    except Exception:
+        air_data = {"current": {}, "hourly": {}}
+    try:
         weather_data = get_weather(assessment_lat, assessment_lon)
     except Exception:
-        # Keep the already retrieved city data if point-level data is unavailable.
-        assessment_lat, assessment_lon = lat, lon
-        assessment_name = city_name
-        assessment_is_factory = False
+        weather_data = {"current": {}, "hourly": {}}
 
 current_air = air_data.get("current", {})
 current_weather = weather_data.get("current", {})
@@ -1294,23 +1318,4 @@ with tabs[5]:
         chart_df = pd.DataFrame(chart_rows).sort_values("Concentration", ascending=True)
         risk_fig = px.bar(
             chart_df, x="Concentration", y="Pollutant", orientation="h",
-            title="Концентрации загрязнителей · µg/m³",
-            text_auto=".1f",
-        )
-        risk_fig.update_traces(marker_color=GREEN, textposition="outside", cliponaxis=False)
-        risk_fig.update_layout(
-            paper_bgcolor=BG, plot_bgcolor="#fffef8",
-            font=dict(family="Roboto, Arial", color="#34402C"),
-            margin=dict(l=10, r=35, t=55, b=15),
-            xaxis_title="Концентрация, µg/m³", yaxis_title="",
-            showlegend=False,
-        )
-        st.plotly_chart(risk_fig, use_container_width=True)
-
-    st.caption(t("risk_aqi_legend"))
-    st.write("Индекс AQI описывает краткосрочное качество воздуха по модели. Он не является проверкой соблюдения казахстанских нормативов и не доказывает, что конкретный завод вызвал загрязнение.")
-    st.write("Для официального вывода нужны данные аккредитованных постов наблюдения, применимые нормативы Казахстана и подтверждённая методика оценки предприятия.")
-    st.markdown(
-    "[Методика US AQI — US EPA](https://www.airnow.gov/aqi/aqi-basics/) · "
-    "[European AQI — EEA](https://www.eea.europa.eu/)"
-)
+            title="Концентрации загрязнителей ·
